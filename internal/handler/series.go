@@ -96,3 +96,22 @@ func UpdateSeries(client *ent.Client) http.HandlerFunc {
 		json.NewEncoder(w).Encode(updatedSeries)
 	}
 }
+
+func BulkCreateSeriesHandler(client *ent.Client) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var seriesList []types.CreateSeriesRequest
+		if err := json.NewDecoder(r.Body).Decode(&seriesList); err != nil {
+			http.Error(w, "invalid request", http.StatusBadRequest)
+			return
+		}
+		newSeriesList, err := controller.BulkCreateSeries(r.Context(), client, seriesList)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+		json.NewEncoder(w).Encode(newSeriesList)
+	}
+}

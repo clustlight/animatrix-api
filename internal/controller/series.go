@@ -85,3 +85,24 @@ func UpdateSeries(ctx context.Context, client *ent.Client, seriesID string, req 
 	resp := utils.BuildSeriesResponse(updatedSeries, false, false)
 	return &resp, nil
 }
+
+func BulkCreateSeries(ctx context.Context, client *ent.Client, seriesList []types.CreateSeriesRequest) ([]types.SeriesResponse, error) {
+	bulk := make([]*ent.SeriesCreate, 0, len(seriesList))
+	for _, req := range seriesList {
+		sc := client.Series.Create().
+			SetSeriesID(req.SeriesID).
+			SetTitle(req.Title).
+			SetTitleYomi(req.TitleYomi).
+			SetTitleEn(req.TitleEn)
+		bulk = append(bulk, sc)
+	}
+	created, err := client.Series.CreateBulk(bulk...).Save(ctx)
+	if err != nil {
+		return nil, err
+	}
+	resps := make([]types.SeriesResponse, 0, len(created))
+	for _, s := range created {
+		resps = append(resps, utils.BuildSeriesResponse(s, false, false))
+	}
+	return resps, nil
+}
