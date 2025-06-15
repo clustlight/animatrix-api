@@ -51,6 +51,11 @@ func CreateSeason(client *ent.Client) http.HandlerFunc {
 			return
 		}
 
+		if seasonData.SeriesID == "" {
+			http.Error(w, "SeriesID is required", http.StatusBadRequest)
+			return
+		}
+
 		ctx := r.Context()
 		newSeason, err := controller.CreateSeason(ctx, client, &seasonData)
 		if err != nil {

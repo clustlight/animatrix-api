@@ -52,6 +52,11 @@ func CreateEpisode(client *ent.Client) http.HandlerFunc {
 			return
 		}
 
+		if episodeData.SeasonID == "" {
+			http.Error(w, "SeasonID is required", http.StatusBadRequest)
+			return
+		}
+
 		ctx := r.Context()
 		newEpisode, err := controller.CreateEpisode(ctx, client, &episodeData)
 		if err != nil {
