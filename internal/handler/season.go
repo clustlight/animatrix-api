@@ -86,3 +86,20 @@ func UpdateSeason(client *ent.Client) http.HandlerFunc {
 		json.NewEncoder(w).Encode(updatedSeason)
 	}
 }
+
+func BulkCreateSeasonHandler(client *ent.Client) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var seasonList []types.CreateSeasonRequest
+		if err := json.NewDecoder(r.Body).Decode(&seasonList); err != nil {
+			http.Error(w, "Invalid request payload", http.StatusBadRequest)
+			return
+		}
+		newSeasonList, err := controller.BulkCreateSeason(r.Context(), client, seasonList)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(newSeasonList)
+	}
+}

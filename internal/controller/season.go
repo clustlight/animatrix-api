@@ -137,3 +137,53 @@ func UpdateSeason(ctx context.Context, client *ent.Client, seasonID string, req 
 	resp := utils.BuildSeasonResponse(saved, true)
 	return &resp, nil
 }
+
+func BulkCreateSeason(ctx context.Context, client *ent.Client, seasonList []types.CreateSeasonRequest) ([]types.SeasonResponse, error) {
+	bulk := make([]*ent.SeasonCreate, 0, len(seasonList))
+	for _, req := range seasonList {
+		series, err := client.Series.
+			Query().
+			Where(series.SeriesIDEQ(req.SeriesID)).
+			Only(ctx)
+		if err != nil {
+			return nil, err
+		}
+
+		sc := client.Season.Create().
+			SetSeasonID(req.SeasonID).
+			SetSeasonTitle(req.SeasonTitle).
+			SetSeasonNumber(req.SeasonNumber).
+			SetSeries(series)
+		if req.SeasonTitleYomi != nil {
+			sc = sc.SetSeasonTitleYomi(*req.SeasonTitleYomi)
+		}
+		if req.ShoboiTID != nil {
+			sc = sc.SetShoboiTid(*req.ShoboiTID)
+		}
+		if req.Description != nil {
+			sc = sc.SetDescription(*req.Description)
+		}
+		if req.FirstYear != nil {
+			sc = sc.SetFirstYear(*req.FirstYear)
+		}
+		if req.FirstMonth != nil {
+			sc = sc.SetFirstMonth(*req.FirstMonth)
+		}
+		if req.FirstEndYear != nil {
+			sc = sc.SetFirstEndYear(*req.FirstEndYear)
+		}
+		if req.FirstEndMonth != nil {
+			sc = sc.SetFirstEndMonth(*req.FirstEndMonth)
+		}
+		bulk = append(bulk, sc)
+	}
+	created, err := client.Season.CreateBulk(bulk...).Save(ctx)
+	if err != nil {
+		return nil, err
+	}
+	resps := make([]types.SeasonResponse, 0, len(created))
+	for _, s := range created {
+		resps = append(resps, utils.BuildSeasonResponse(s, false))
+	}
+	return resps, nil
+}
