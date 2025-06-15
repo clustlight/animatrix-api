@@ -24,6 +24,8 @@ func NewRouter(client *ent.Client) *chi.Mux {
 		api.Post("/episode", handler.CreateEpisode(client))
 		api.Get("/episode/{episode_id}", handler.GetEpisodeDetail(client))
 		api.Patch("/episode/{episode_id}", handler.UpdateEpisode(client))
+
+		api.Get("/content/{episode_id}/{filename}", handler.GetContent())
 	})
 	return r
 }
