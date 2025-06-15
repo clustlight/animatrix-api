@@ -3,8 +3,8 @@ package types
 import "time"
 
 type EpisodeResponse struct {
-	Title          string    `json:"title"`
 	EpisodeID      string    `json:"episode_id"`
+	Title          string    `json:"title"`
 	EpisodeNumber  int       `json:"episode_number"`
 	Duration       float64   `json:"duration"`
 	DurationString string    `json:"duration_string"`

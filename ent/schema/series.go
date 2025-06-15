@@ -14,8 +14,8 @@ type Series struct {
 // Fields of the Series.
 func (Series) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("series_id").Unique(),
-		field.String("title"),
+		field.String("series_id").Unique().NotEmpty(),
+		field.String("title").NotEmpty(),
 		field.String("title_yomi").Optional(),
 		field.String("title_en").Optional(),
 	}

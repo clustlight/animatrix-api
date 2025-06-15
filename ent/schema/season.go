@@ -14,8 +14,8 @@ type Season struct {
 // Fields of the Season.
 func (Season) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("season_id").Unique(),
-		field.String("season_title"),
+		field.String("season_id").Unique().NotEmpty(),
+		field.String("season_title").NotEmpty(),
 		field.String("season_title_yomi").Optional(),
 		field.Int("season_number"),
 		field.Int("shoboi_tid").Optional(),

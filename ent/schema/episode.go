@@ -14,8 +14,8 @@ type Episode struct {
 // Fields of the Episode.
 func (Episode) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("title"),
-		field.String("episode_id").Unique(),
+		field.String("episode_id").Unique().NotEmpty(),
+		field.String("title").NotEmpty(),
 		field.Int("episode_number"),
 		field.Float("duration"),
 		field.String("duration_string"),
