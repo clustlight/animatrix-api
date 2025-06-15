@@ -51,8 +51,8 @@ func CreateSeason(client *ent.Client) http.HandlerFunc {
 			return
 		}
 
-		if seasonData.SeriesID == "" {
-			http.Error(w, "SeriesID is required", http.StatusBadRequest)
+		if err := seasonData.ValidateRequired(); err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 

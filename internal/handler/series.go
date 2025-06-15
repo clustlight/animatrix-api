@@ -53,6 +53,11 @@ func CreateSeries(client *ent.Client) http.HandlerFunc {
 			return
 		}
 
+		if err := seriesData.ValidateRequired(); err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
 		ctx := r.Context()
 		newSeries, err := controller.CreateSeries(ctx, client, &seriesData)
 		if err != nil {

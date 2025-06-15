@@ -1,6 +1,9 @@
 package types
 
-import "time"
+import (
+	"fmt"
+	"time"
+)
 
 type EpisodeResponse struct {
 	EpisodeID      string    `json:"episode_id"`
@@ -41,4 +44,41 @@ type UpdateEpisodeRequest struct {
 	Height         *int       `json:"height,omitempty"`
 	DynamicRange   *string    `json:"dynamic_range,omitempty"`
 	Metadata       *string    `json:"metadata,omitempty"`
+}
+
+func (r *CreateEpisodeRequest) ValidateRequired() error {
+	if r.SeasonID == "" {
+		return fmt.Errorf("season_id is required")
+	}
+	if r.EpisodeID == "" {
+		return fmt.Errorf("episode_id is required")
+	}
+	if r.Title == "" {
+		return fmt.Errorf("title is required")
+	}
+	if r.EpisodeNumber < 0 {
+		return fmt.Errorf("episode_number must be greater than -1")
+	}
+	if r.Duration <= 0 {
+		return fmt.Errorf("duration must be greater than 0")
+	}
+	if r.DurationString == "" {
+		return fmt.Errorf("duration_string is required")
+	}
+	if r.Timestamp.IsZero() {
+		return fmt.Errorf("timestamp is required")
+	}
+	if r.FormatID == "" {
+		return fmt.Errorf("format_id is required")
+	}
+	if r.Width <= 0 {
+		return fmt.Errorf("width must be greater than 0")
+	}
+	if r.Height <= 0 {
+		return fmt.Errorf("height must be greater than 0")
+	}
+	if r.DynamicRange == "" {
+		return fmt.Errorf("dynamic_range is required")
+	}
+	return nil
 }

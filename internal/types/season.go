@@ -1,5 +1,9 @@
 package types
 
+import (
+	"fmt"
+)
+
 type SeasonResponse struct {
 	SeasonID        string            `json:"season_id"`
 	SeasonTitle     string            `json:"season_title"`
@@ -38,4 +42,20 @@ type UpdateSeasonRequest struct {
 	FirstMonth      *int    `json:"first_month,omitempty"`
 	FirstEndYear    *int    `json:"first_end_year,omitempty"`
 	FirstEndMonth   *int    `json:"first_end_month,omitempty"`
+}
+
+func (r *CreateSeasonRequest) ValidateRequired() error {
+	if r.SeriesID == "" {
+		return fmt.Errorf("series_id")
+	}
+	if r.SeasonID == "" {
+		return fmt.Errorf("season_id")
+	}
+	if r.SeasonTitle == "" {
+		return fmt.Errorf("season_title")
+	}
+	if r.SeasonNumber < 0 {
+		return fmt.Errorf("season_number must be greater than -1")
+	}
+	return nil
 }

@@ -52,8 +52,8 @@ func CreateEpisode(client *ent.Client) http.HandlerFunc {
 			return
 		}
 
-		if episodeData.SeasonID == "" {
-			http.Error(w, "SeasonID is required", http.StatusBadRequest)
+		if err := episodeData.ValidateRequired(); err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 
