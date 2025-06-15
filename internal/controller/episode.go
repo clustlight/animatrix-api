@@ -121,3 +121,40 @@ func UpdateEpisode(ctx context.Context, client *ent.Client, episodeID string, re
 	resp := utils.BuildEpisodeResponse(updatedEpisode)
 	return &resp, nil
 }
+
+func BulkCreateEpisode(ctx context.Context, client *ent.Client, episodeList []types.CreateEpisodeRequest) ([]types.EpisodeResponse, error) {
+	bulk := make([]*ent.EpisodeCreate, 0, len(episodeList))
+	for _, req := range episodeList {
+		season, err := client.Season.
+			Query().
+			Where(season.SeasonIDEQ(req.SeasonID)).
+			Only(ctx)
+		if err != nil {
+			return nil, err
+		}
+
+		ec := client.Episode.Create().
+			SetEpisodeID(req.EpisodeID).
+			SetTitle(req.Title).
+			SetEpisodeNumber(req.EpisodeNumber).
+			SetDuration(req.Duration).
+			SetDurationString(req.DurationString).
+			SetTimestamp(req.Timestamp).
+			SetFormatID(req.FormatID).
+			SetWidth(req.Width).
+			SetHeight(req.Height).
+			SetDynamicRange(req.DynamicRange).
+			SetMetadata(req.Metadata).
+			SetSeason(season)
+		bulk = append(bulk, ec)
+	}
+	created, err := client.Episode.CreateBulk(bulk...).Save(ctx)
+	if err != nil {
+		return nil, err
+	}
+	resps := make([]types.EpisodeResponse, 0, len(created))
+	for _, e := range created {
+		resps = append(resps, utils.BuildEpisodeResponse(e))
+	}
+	return resps, nil
+}

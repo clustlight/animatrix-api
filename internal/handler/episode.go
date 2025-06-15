@@ -87,3 +87,22 @@ func UpdateEpisode(client *ent.Client) http.HandlerFunc {
 		json.NewEncoder(w).Encode(updatedEpisode)
 	}
 }
+
+func BulkCreateEpisodeHandler(client *ent.Client) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var EpisodeList []types.CreateEpisodeRequest
+		if err := json.NewDecoder(r.Body).Decode(&EpisodeList); err != nil {
+			http.Error(w, "invalid request", http.StatusBadRequest)
+			return
+		}
+		newEpisodeList, err := controller.BulkCreateEpisode(r.Context(), client, EpisodeList)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+		json.NewEncoder(w).Encode(newEpisodeList)
+	}
+}
