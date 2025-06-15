@@ -16,6 +16,8 @@ type EpisodeResponse struct {
 	Width          int       `json:"width"`
 	Height         int       `json:"height"`
 	DynamicRange   string    `json:"dynamic_range"`
+	VideoUrl       string    `json:"video_url"`
+	ThumbnailUrl   string    `json:"thumbnail_url"`
 }
 
 type CreateEpisodeRequest struct {

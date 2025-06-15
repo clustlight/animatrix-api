@@ -1,6 +1,9 @@
 package utils
 
 import (
+	"os"
+	"strings"
+
 	"github.com/clustlight/animatrix-api/ent"
 	"github.com/clustlight/animatrix-api/internal/types"
 )
@@ -46,6 +49,11 @@ func BuildSeasonResponse(season *ent.Season, withEpisodes bool) types.SeasonResp
 }
 
 func BuildEpisodeResponse(ep *ent.Episode) types.EpisodeResponse {
+	baseURL := os.Getenv("OBJECT_STORAGE_URL")
+	pathStr := strings.Replace(ep.EpisodeID, "_", "/", 1)
+	videoURL := baseURL + pathStr + "/video.mp4"
+	thumbURL := baseURL + pathStr + "/thumbnail.png"
+
 	return types.EpisodeResponse{
 		Title:          ep.Title,
 		EpisodeID:      ep.EpisodeID,
@@ -57,5 +65,7 @@ func BuildEpisodeResponse(ep *ent.Episode) types.EpisodeResponse {
 		Width:          ep.Width,
 		Height:         ep.Height,
 		DynamicRange:   ep.DynamicRange,
+		VideoUrl:       videoURL,
+		ThumbnailUrl:   thumbURL,
 	}
 }
