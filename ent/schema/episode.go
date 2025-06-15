@@ -20,7 +20,6 @@ func (Episode) Fields() []ent.Field {
 		field.Float("duration"),
 		field.String("duration_string"),
 		field.Time("timestamp"),
-		field.String("thumbnail"),
 
 		field.String("format_id"),
 		field.Int("width"),

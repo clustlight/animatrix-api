@@ -56,7 +56,6 @@ func CreateEpisode(ctx context.Context, client *ent.Client, req *types.CreateEpi
 		SetDuration(req.Duration).
 		SetDurationString(req.DurationString).
 		SetTimestamp(req.Timestamp).
-		SetThumbnail(req.Thumbnail).
 		SetFormatID(req.FormatID).
 		SetWidth(req.Width).
 		SetHeight(req.Height).
@@ -97,9 +96,6 @@ func UpdateEpisode(ctx context.Context, client *ent.Client, episodeID string, re
 	}
 	if req.Timestamp != nil {
 		update.SetTimestamp(*req.Timestamp)
-	}
-	if req.Thumbnail != nil {
-		update.SetThumbnail(*req.Thumbnail)
 	}
 	if req.FormatID != nil {
 		update.SetFormatID(*req.FormatID)

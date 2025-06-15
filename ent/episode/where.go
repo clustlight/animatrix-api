@@ -85,11 +85,6 @@ func Timestamp(v time.Time) predicate.Episode {
 	return predicate.Episode(sql.FieldEQ(FieldTimestamp, v))
 }
 
-// Thumbnail applies equality check predicate on the "thumbnail" field. It's identical to ThumbnailEQ.
-func Thumbnail(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldEQ(FieldThumbnail, v))
-}
-
 // FormatID applies equality check predicate on the "format_id" field. It's identical to FormatIDEQ.
 func FormatID(v string) predicate.Episode {
 	return predicate.Episode(sql.FieldEQ(FieldFormatID, v))
@@ -428,71 +423,6 @@ func TimestampLT(v time.Time) predicate.Episode {
 // TimestampLTE applies the LTE predicate on the "timestamp" field.
 func TimestampLTE(v time.Time) predicate.Episode {
 	return predicate.Episode(sql.FieldLTE(FieldTimestamp, v))
-}
-
-// ThumbnailEQ applies the EQ predicate on the "thumbnail" field.
-func ThumbnailEQ(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldEQ(FieldThumbnail, v))
-}
-
-// ThumbnailNEQ applies the NEQ predicate on the "thumbnail" field.
-func ThumbnailNEQ(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldNEQ(FieldThumbnail, v))
-}
-
-// ThumbnailIn applies the In predicate on the "thumbnail" field.
-func ThumbnailIn(vs ...string) predicate.Episode {
-	return predicate.Episode(sql.FieldIn(FieldThumbnail, vs...))
-}
-
-// ThumbnailNotIn applies the NotIn predicate on the "thumbnail" field.
-func ThumbnailNotIn(vs ...string) predicate.Episode {
-	return predicate.Episode(sql.FieldNotIn(FieldThumbnail, vs...))
-}
-
-// ThumbnailGT applies the GT predicate on the "thumbnail" field.
-func ThumbnailGT(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldGT(FieldThumbnail, v))
-}
-
-// ThumbnailGTE applies the GTE predicate on the "thumbnail" field.
-func ThumbnailGTE(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldGTE(FieldThumbnail, v))
-}
-
-// ThumbnailLT applies the LT predicate on the "thumbnail" field.
-func ThumbnailLT(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldLT(FieldThumbnail, v))
-}
-
-// ThumbnailLTE applies the LTE predicate on the "thumbnail" field.
-func ThumbnailLTE(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldLTE(FieldThumbnail, v))
-}
-
-// ThumbnailContains applies the Contains predicate on the "thumbnail" field.
-func ThumbnailContains(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldContains(FieldThumbnail, v))
-}
-
-// ThumbnailHasPrefix applies the HasPrefix predicate on the "thumbnail" field.
-func ThumbnailHasPrefix(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldHasPrefix(FieldThumbnail, v))
-}
-
-// ThumbnailHasSuffix applies the HasSuffix predicate on the "thumbnail" field.
-func ThumbnailHasSuffix(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldHasSuffix(FieldThumbnail, v))
-}
-
-// ThumbnailEqualFold applies the EqualFold predicate on the "thumbnail" field.
-func ThumbnailEqualFold(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldEqualFold(FieldThumbnail, v))
-}
-
-// ThumbnailContainsFold applies the ContainsFold predicate on the "thumbnail" field.
-func ThumbnailContainsFold(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldContainsFold(FieldThumbnail, v))
 }
 
 // FormatIDEQ applies the EQ predicate on the "format_id" field.

@@ -57,12 +57,6 @@ func (ec *EpisodeCreate) SetTimestamp(t time.Time) *EpisodeCreate {
 	return ec
 }
 
-// SetThumbnail sets the "thumbnail" field.
-func (ec *EpisodeCreate) SetThumbnail(s string) *EpisodeCreate {
-	ec.mutation.SetThumbnail(s)
-	return ec
-}
-
 // SetFormatID sets the "format_id" field.
 func (ec *EpisodeCreate) SetFormatID(s string) *EpisodeCreate {
 	ec.mutation.SetFormatID(s)
@@ -156,9 +150,6 @@ func (ec *EpisodeCreate) check() error {
 	if _, ok := ec.mutation.Timestamp(); !ok {
 		return &ValidationError{Name: "timestamp", err: errors.New(`ent: missing required field "Episode.timestamp"`)}
 	}
-	if _, ok := ec.mutation.Thumbnail(); !ok {
-		return &ValidationError{Name: "thumbnail", err: errors.New(`ent: missing required field "Episode.thumbnail"`)}
-	}
 	if _, ok := ec.mutation.FormatID(); !ok {
 		return &ValidationError{Name: "format_id", err: errors.New(`ent: missing required field "Episode.format_id"`)}
 	}
@@ -226,10 +217,6 @@ func (ec *EpisodeCreate) createSpec() (*Episode, *sqlgraph.CreateSpec) {
 	if value, ok := ec.mutation.Timestamp(); ok {
 		_spec.SetField(episode.FieldTimestamp, field.TypeTime, value)
 		_node.Timestamp = value
-	}
-	if value, ok := ec.mutation.Thumbnail(); ok {
-		_spec.SetField(episode.FieldThumbnail, field.TypeString, value)
-		_node.Thumbnail = value
 	}
 	if value, ok := ec.mutation.FormatID(); ok {
 		_spec.SetField(episode.FieldFormatID, field.TypeString, value)

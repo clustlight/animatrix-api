@@ -53,7 +53,6 @@ func BuildEpisodeResponse(ep *ent.Episode) types.EpisodeResponse {
 		Duration:       ep.Duration,
 		DurationString: ep.DurationString,
 		Timestamp:      ep.Timestamp,
-		Thumbnail:      ep.Thumbnail,
 		FormatID:       ep.FormatID,
 		Width:          ep.Width,
 		Height:         ep.Height,

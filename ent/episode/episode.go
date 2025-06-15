@@ -24,8 +24,6 @@ const (
 	FieldDurationString = "duration_string"
 	// FieldTimestamp holds the string denoting the timestamp field in the database.
 	FieldTimestamp = "timestamp"
-	// FieldThumbnail holds the string denoting the thumbnail field in the database.
-	FieldThumbnail = "thumbnail"
 	// FieldFormatID holds the string denoting the format_id field in the database.
 	FieldFormatID = "format_id"
 	// FieldWidth holds the string denoting the width field in the database.
@@ -58,7 +56,6 @@ var Columns = []string{
 	FieldDuration,
 	FieldDurationString,
 	FieldTimestamp,
-	FieldThumbnail,
 	FieldFormatID,
 	FieldWidth,
 	FieldHeight,
@@ -123,11 +120,6 @@ func ByDurationString(opts ...sql.OrderTermOption) OrderOption {
 // ByTimestamp orders the results by the timestamp field.
 func ByTimestamp(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldTimestamp, opts...).ToFunc()
-}
-
-// ByThumbnail orders the results by the thumbnail field.
-func ByThumbnail(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldThumbnail, opts...).ToFunc()
 }
 
 // ByFormatID orders the results by the format_id field.

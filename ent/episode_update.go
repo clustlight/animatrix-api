@@ -127,20 +127,6 @@ func (eu *EpisodeUpdate) SetNillableTimestamp(t *time.Time) *EpisodeUpdate {
 	return eu
 }
 
-// SetThumbnail sets the "thumbnail" field.
-func (eu *EpisodeUpdate) SetThumbnail(s string) *EpisodeUpdate {
-	eu.mutation.SetThumbnail(s)
-	return eu
-}
-
-// SetNillableThumbnail sets the "thumbnail" field if the given value is not nil.
-func (eu *EpisodeUpdate) SetNillableThumbnail(s *string) *EpisodeUpdate {
-	if s != nil {
-		eu.SetThumbnail(*s)
-	}
-	return eu
-}
-
 // SetFormatID sets the "format_id" field.
 func (eu *EpisodeUpdate) SetFormatID(s string) *EpisodeUpdate {
 	eu.mutation.SetFormatID(s)
@@ -318,9 +304,6 @@ func (eu *EpisodeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := eu.mutation.Timestamp(); ok {
 		_spec.SetField(episode.FieldTimestamp, field.TypeTime, value)
 	}
-	if value, ok := eu.mutation.Thumbnail(); ok {
-		_spec.SetField(episode.FieldThumbnail, field.TypeString, value)
-	}
 	if value, ok := eu.mutation.FormatID(); ok {
 		_spec.SetField(episode.FieldFormatID, field.TypeString, value)
 	}
@@ -485,20 +468,6 @@ func (euo *EpisodeUpdateOne) SetTimestamp(t time.Time) *EpisodeUpdateOne {
 func (euo *EpisodeUpdateOne) SetNillableTimestamp(t *time.Time) *EpisodeUpdateOne {
 	if t != nil {
 		euo.SetTimestamp(*t)
-	}
-	return euo
-}
-
-// SetThumbnail sets the "thumbnail" field.
-func (euo *EpisodeUpdateOne) SetThumbnail(s string) *EpisodeUpdateOne {
-	euo.mutation.SetThumbnail(s)
-	return euo
-}
-
-// SetNillableThumbnail sets the "thumbnail" field if the given value is not nil.
-func (euo *EpisodeUpdateOne) SetNillableThumbnail(s *string) *EpisodeUpdateOne {
-	if s != nil {
-		euo.SetThumbnail(*s)
 	}
 	return euo
 }
@@ -709,9 +678,6 @@ func (euo *EpisodeUpdateOne) sqlSave(ctx context.Context) (_node *Episode, err e
 	}
 	if value, ok := euo.mutation.Timestamp(); ok {
 		_spec.SetField(episode.FieldTimestamp, field.TypeTime, value)
-	}
-	if value, ok := euo.mutation.Thumbnail(); ok {
-		_spec.SetField(episode.FieldThumbnail, field.TypeString, value)
 	}
 	if value, ok := euo.mutation.FormatID(); ok {
 		_spec.SetField(episode.FieldFormatID, field.TypeString, value)

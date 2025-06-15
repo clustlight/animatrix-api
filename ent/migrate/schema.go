@@ -17,7 +17,6 @@ var (
 		{Name: "duration", Type: field.TypeFloat64},
 		{Name: "duration_string", Type: field.TypeString},
 		{Name: "timestamp", Type: field.TypeTime},
-		{Name: "thumbnail", Type: field.TypeString},
 		{Name: "format_id", Type: field.TypeString},
 		{Name: "width", Type: field.TypeInt},
 		{Name: "height", Type: field.TypeInt},
@@ -33,7 +32,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "episodes_seasons_episodes",
-				Columns:    []*schema.Column{EpisodesColumns[13]},
+				Columns:    []*schema.Column{EpisodesColumns[12]},
 				RefColumns: []*schema.Column{SeasonsColumns[0]},
 				OnDelete:   schema.NoAction,
 			},

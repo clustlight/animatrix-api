@@ -9,7 +9,6 @@ type EpisodeResponse struct {
 	Duration       float64   `json:"duration"`
 	DurationString string    `json:"duration_string"`
 	Timestamp      time.Time `json:"timestamp"`
-	Thumbnail      string    `json:"thumbnail"`
 	FormatID       string    `json:"format_id"`
 	Width          int       `json:"width"`
 	Height         int       `json:"height"`
@@ -24,7 +23,6 @@ type CreateEpisodeRequest struct {
 	Duration       float64   `json:"duration" validate:"required"`
 	DurationString string    `json:"duration_string" validate:"required"`
 	Timestamp      time.Time `json:"timestamp" validate:"required"` // ISO 8601 format
-	Thumbnail      string    `json:"thumbnail" validate:"required"`
 	FormatID       string    `json:"format_id" validate:"required"`
 	Width          int       `json:"width" validate:"required"`
 	Height         int       `json:"height" validate:"required"`
@@ -37,8 +35,7 @@ type UpdateEpisodeRequest struct {
 	EpisodeNumber  *int       `json:"episode_number,omitempty"`
 	Duration       *float64   `json:"duration,omitempty"`
 	DurationString *string    `json:"duration_string,omitempty"`
-	Timestamp      *time.Time `json:"timestamp,omitempty"` // ISO 8601 format
-	Thumbnail      *string    `json:"thumbnail,omitempty"`
+	Timestamp      *time.Time `json:"timestamp,omitempty"` // ISO 8601 format`
 	FormatID       *string    `json:"format_id,omitempty"`
 	Width          *int       `json:"width,omitempty"`
 	Height         *int       `json:"height,omitempty"`

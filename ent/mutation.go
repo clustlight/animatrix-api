@@ -45,7 +45,6 @@ type EpisodeMutation struct {
 	addduration       *float64
 	duration_string   *string
 	timestamp         *time.Time
-	thumbnail         *string
 	format_id         *string
 	width             *int
 	addwidth          *int
@@ -415,42 +414,6 @@ func (m *EpisodeMutation) ResetTimestamp() {
 	m.timestamp = nil
 }
 
-// SetThumbnail sets the "thumbnail" field.
-func (m *EpisodeMutation) SetThumbnail(s string) {
-	m.thumbnail = &s
-}
-
-// Thumbnail returns the value of the "thumbnail" field in the mutation.
-func (m *EpisodeMutation) Thumbnail() (r string, exists bool) {
-	v := m.thumbnail
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldThumbnail returns the old "thumbnail" field's value of the Episode entity.
-// If the Episode object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EpisodeMutation) OldThumbnail(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldThumbnail is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldThumbnail requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldThumbnail: %w", err)
-	}
-	return oldValue.Thumbnail, nil
-}
-
-// ResetThumbnail resets all changes to the "thumbnail" field.
-func (m *EpisodeMutation) ResetThumbnail() {
-	m.thumbnail = nil
-}
-
 // SetFormatID sets the "format_id" field.
 func (m *EpisodeMutation) SetFormatID(s string) {
 	m.format_id = &s
@@ -744,7 +707,7 @@ func (m *EpisodeMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *EpisodeMutation) Fields() []string {
-	fields := make([]string, 0, 12)
+	fields := make([]string, 0, 11)
 	if m.title != nil {
 		fields = append(fields, episode.FieldTitle)
 	}
@@ -762,9 +725,6 @@ func (m *EpisodeMutation) Fields() []string {
 	}
 	if m.timestamp != nil {
 		fields = append(fields, episode.FieldTimestamp)
-	}
-	if m.thumbnail != nil {
-		fields = append(fields, episode.FieldThumbnail)
 	}
 	if m.format_id != nil {
 		fields = append(fields, episode.FieldFormatID)
@@ -801,8 +761,6 @@ func (m *EpisodeMutation) Field(name string) (ent.Value, bool) {
 		return m.DurationString()
 	case episode.FieldTimestamp:
 		return m.Timestamp()
-	case episode.FieldThumbnail:
-		return m.Thumbnail()
 	case episode.FieldFormatID:
 		return m.FormatID()
 	case episode.FieldWidth:
@@ -834,8 +792,6 @@ func (m *EpisodeMutation) OldField(ctx context.Context, name string) (ent.Value,
 		return m.OldDurationString(ctx)
 	case episode.FieldTimestamp:
 		return m.OldTimestamp(ctx)
-	case episode.FieldThumbnail:
-		return m.OldThumbnail(ctx)
 	case episode.FieldFormatID:
 		return m.OldFormatID(ctx)
 	case episode.FieldWidth:
@@ -896,13 +852,6 @@ func (m *EpisodeMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetTimestamp(v)
-		return nil
-	case episode.FieldThumbnail:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetThumbnail(v)
 		return nil
 	case episode.FieldFormatID:
 		v, ok := value.(string)
@@ -1056,9 +1005,6 @@ func (m *EpisodeMutation) ResetField(name string) error {
 		return nil
 	case episode.FieldTimestamp:
 		m.ResetTimestamp()
-		return nil
-	case episode.FieldThumbnail:
-		m.ResetThumbnail()
 		return nil
 	case episode.FieldFormatID:
 		m.ResetFormatID()

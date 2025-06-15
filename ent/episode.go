@@ -30,8 +30,6 @@ type Episode struct {
 	DurationString string `json:"duration_string,omitempty"`
 	// Timestamp holds the value of the "timestamp" field.
 	Timestamp time.Time `json:"timestamp,omitempty"`
-	// Thumbnail holds the value of the "thumbnail" field.
-	Thumbnail string `json:"thumbnail,omitempty"`
 	// FormatID holds the value of the "format_id" field.
 	FormatID string `json:"format_id,omitempty"`
 	// Width holds the value of the "width" field.
@@ -78,7 +76,7 @@ func (*Episode) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullFloat64)
 		case episode.FieldID, episode.FieldEpisodeNumber, episode.FieldWidth, episode.FieldHeight:
 			values[i] = new(sql.NullInt64)
-		case episode.FieldTitle, episode.FieldEpisodeID, episode.FieldDurationString, episode.FieldThumbnail, episode.FieldFormatID, episode.FieldDynamicRange, episode.FieldMetadata:
+		case episode.FieldTitle, episode.FieldEpisodeID, episode.FieldDurationString, episode.FieldFormatID, episode.FieldDynamicRange, episode.FieldMetadata:
 			values[i] = new(sql.NullString)
 		case episode.FieldTimestamp:
 			values[i] = new(sql.NullTime)
@@ -140,12 +138,6 @@ func (e *Episode) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field timestamp", values[i])
 			} else if value.Valid {
 				e.Timestamp = value.Time
-			}
-		case episode.FieldThumbnail:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field thumbnail", values[i])
-			} else if value.Valid {
-				e.Thumbnail = value.String
 			}
 		case episode.FieldFormatID:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -242,9 +234,6 @@ func (e *Episode) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("timestamp=")
 	builder.WriteString(e.Timestamp.Format(time.ANSIC))
-	builder.WriteString(", ")
-	builder.WriteString("thumbnail=")
-	builder.WriteString(e.Thumbnail)
 	builder.WriteString(", ")
 	builder.WriteString("format_id=")
 	builder.WriteString(e.FormatID)
