@@ -18,6 +18,8 @@ const (
 	FieldTitle = "title"
 	// FieldTitleYomi holds the string denoting the title_yomi field in the database.
 	FieldTitleYomi = "title_yomi"
+	// FieldTitleEn holds the string denoting the title_en field in the database.
+	FieldTitleEn = "title_en"
 	// EdgeSeasons holds the string denoting the seasons edge name in mutations.
 	EdgeSeasons = "seasons"
 	// Table holds the table name of the series in the database.
@@ -37,6 +39,7 @@ var Columns = []string{
 	FieldSeriesID,
 	FieldTitle,
 	FieldTitleYomi,
+	FieldTitleEn,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -70,6 +73,11 @@ func ByTitle(opts ...sql.OrderTermOption) OrderOption {
 // ByTitleYomi orders the results by the title_yomi field.
 func ByTitleYomi(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldTitleYomi, opts...).ToFunc()
+}
+
+// ByTitleEn orders the results by the title_en field.
+func ByTitleEn(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldTitleEn, opts...).ToFunc()
 }
 
 // BySeasonsCount orders the results by seasons count.

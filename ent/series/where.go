@@ -68,6 +68,11 @@ func TitleYomi(v string) predicate.Series {
 	return predicate.Series(sql.FieldEQ(FieldTitleYomi, v))
 }
 
+// TitleEn applies equality check predicate on the "title_en" field. It's identical to TitleEnEQ.
+func TitleEn(v string) predicate.Series {
+	return predicate.Series(sql.FieldEQ(FieldTitleEn, v))
+}
+
 // SeriesIDEQ applies the EQ predicate on the "series_id" field.
 func SeriesIDEQ(v string) predicate.Series {
 	return predicate.Series(sql.FieldEQ(FieldSeriesID, v))
@@ -271,6 +276,81 @@ func TitleYomiEqualFold(v string) predicate.Series {
 // TitleYomiContainsFold applies the ContainsFold predicate on the "title_yomi" field.
 func TitleYomiContainsFold(v string) predicate.Series {
 	return predicate.Series(sql.FieldContainsFold(FieldTitleYomi, v))
+}
+
+// TitleEnEQ applies the EQ predicate on the "title_en" field.
+func TitleEnEQ(v string) predicate.Series {
+	return predicate.Series(sql.FieldEQ(FieldTitleEn, v))
+}
+
+// TitleEnNEQ applies the NEQ predicate on the "title_en" field.
+func TitleEnNEQ(v string) predicate.Series {
+	return predicate.Series(sql.FieldNEQ(FieldTitleEn, v))
+}
+
+// TitleEnIn applies the In predicate on the "title_en" field.
+func TitleEnIn(vs ...string) predicate.Series {
+	return predicate.Series(sql.FieldIn(FieldTitleEn, vs...))
+}
+
+// TitleEnNotIn applies the NotIn predicate on the "title_en" field.
+func TitleEnNotIn(vs ...string) predicate.Series {
+	return predicate.Series(sql.FieldNotIn(FieldTitleEn, vs...))
+}
+
+// TitleEnGT applies the GT predicate on the "title_en" field.
+func TitleEnGT(v string) predicate.Series {
+	return predicate.Series(sql.FieldGT(FieldTitleEn, v))
+}
+
+// TitleEnGTE applies the GTE predicate on the "title_en" field.
+func TitleEnGTE(v string) predicate.Series {
+	return predicate.Series(sql.FieldGTE(FieldTitleEn, v))
+}
+
+// TitleEnLT applies the LT predicate on the "title_en" field.
+func TitleEnLT(v string) predicate.Series {
+	return predicate.Series(sql.FieldLT(FieldTitleEn, v))
+}
+
+// TitleEnLTE applies the LTE predicate on the "title_en" field.
+func TitleEnLTE(v string) predicate.Series {
+	return predicate.Series(sql.FieldLTE(FieldTitleEn, v))
+}
+
+// TitleEnContains applies the Contains predicate on the "title_en" field.
+func TitleEnContains(v string) predicate.Series {
+	return predicate.Series(sql.FieldContains(FieldTitleEn, v))
+}
+
+// TitleEnHasPrefix applies the HasPrefix predicate on the "title_en" field.
+func TitleEnHasPrefix(v string) predicate.Series {
+	return predicate.Series(sql.FieldHasPrefix(FieldTitleEn, v))
+}
+
+// TitleEnHasSuffix applies the HasSuffix predicate on the "title_en" field.
+func TitleEnHasSuffix(v string) predicate.Series {
+	return predicate.Series(sql.FieldHasSuffix(FieldTitleEn, v))
+}
+
+// TitleEnIsNil applies the IsNil predicate on the "title_en" field.
+func TitleEnIsNil() predicate.Series {
+	return predicate.Series(sql.FieldIsNull(FieldTitleEn))
+}
+
+// TitleEnNotNil applies the NotNil predicate on the "title_en" field.
+func TitleEnNotNil() predicate.Series {
+	return predicate.Series(sql.FieldNotNull(FieldTitleEn))
+}
+
+// TitleEnEqualFold applies the EqualFold predicate on the "title_en" field.
+func TitleEnEqualFold(v string) predicate.Series {
+	return predicate.Series(sql.FieldEqualFold(FieldTitleEn, v))
+}
+
+// TitleEnContainsFold applies the ContainsFold predicate on the "title_en" field.
+func TitleEnContainsFold(v string) predicate.Series {
+	return predicate.Series(sql.FieldContainsFold(FieldTitleEn, v))
 }
 
 // HasSeasons applies the HasEdge predicate on the "seasons" edge.

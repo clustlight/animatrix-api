@@ -17,6 +17,7 @@ func (Series) Fields() []ent.Field {
 		field.String("series_id").Unique(),
 		field.String("title"),
 		field.String("title_yomi").Optional(),
+		field.String("title_en").Optional(),
 	}
 }
 

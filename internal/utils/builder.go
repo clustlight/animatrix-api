@@ -10,6 +10,7 @@ func BuildSeriesResponse(series *ent.Series, withSeasons, withEpisodes bool) typ
 		SeriesID:  series.SeriesID,
 		Title:     series.Title,
 		TitleYomi: series.TitleYomi,
+		TitleEn:   series.TitleEn,
 	}
 	if withSeasons && series.Edges.Seasons != nil {
 		seasons := make([]types.SeasonResponse, 0, len(series.Edges.Seasons))

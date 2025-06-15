@@ -76,6 +76,26 @@ func (su *SeriesUpdate) ClearTitleYomi() *SeriesUpdate {
 	return su
 }
 
+// SetTitleEn sets the "title_en" field.
+func (su *SeriesUpdate) SetTitleEn(s string) *SeriesUpdate {
+	su.mutation.SetTitleEn(s)
+	return su
+}
+
+// SetNillableTitleEn sets the "title_en" field if the given value is not nil.
+func (su *SeriesUpdate) SetNillableTitleEn(s *string) *SeriesUpdate {
+	if s != nil {
+		su.SetTitleEn(*s)
+	}
+	return su
+}
+
+// ClearTitleEn clears the value of the "title_en" field.
+func (su *SeriesUpdate) ClearTitleEn() *SeriesUpdate {
+	su.mutation.ClearTitleEn()
+	return su
+}
+
 // AddSeasonIDs adds the "seasons" edge to the Season entity by IDs.
 func (su *SeriesUpdate) AddSeasonIDs(ids ...int) *SeriesUpdate {
 	su.mutation.AddSeasonIDs(ids...)
@@ -164,6 +184,12 @@ func (su *SeriesUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if su.mutation.TitleYomiCleared() {
 		_spec.ClearField(series.FieldTitleYomi, field.TypeString)
+	}
+	if value, ok := su.mutation.TitleEn(); ok {
+		_spec.SetField(series.FieldTitleEn, field.TypeString, value)
+	}
+	if su.mutation.TitleEnCleared() {
+		_spec.ClearField(series.FieldTitleEn, field.TypeString)
 	}
 	if su.mutation.SeasonsCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -275,6 +301,26 @@ func (suo *SeriesUpdateOne) SetNillableTitleYomi(s *string) *SeriesUpdateOne {
 // ClearTitleYomi clears the value of the "title_yomi" field.
 func (suo *SeriesUpdateOne) ClearTitleYomi() *SeriesUpdateOne {
 	suo.mutation.ClearTitleYomi()
+	return suo
+}
+
+// SetTitleEn sets the "title_en" field.
+func (suo *SeriesUpdateOne) SetTitleEn(s string) *SeriesUpdateOne {
+	suo.mutation.SetTitleEn(s)
+	return suo
+}
+
+// SetNillableTitleEn sets the "title_en" field if the given value is not nil.
+func (suo *SeriesUpdateOne) SetNillableTitleEn(s *string) *SeriesUpdateOne {
+	if s != nil {
+		suo.SetTitleEn(*s)
+	}
+	return suo
+}
+
+// ClearTitleEn clears the value of the "title_en" field.
+func (suo *SeriesUpdateOne) ClearTitleEn() *SeriesUpdateOne {
+	suo.mutation.ClearTitleEn()
 	return suo
 }
 
@@ -396,6 +442,12 @@ func (suo *SeriesUpdateOne) sqlSave(ctx context.Context) (_node *Series, err err
 	}
 	if suo.mutation.TitleYomiCleared() {
 		_spec.ClearField(series.FieldTitleYomi, field.TypeString)
+	}
+	if value, ok := suo.mutation.TitleEn(); ok {
+		_spec.SetField(series.FieldTitleEn, field.TypeString, value)
+	}
+	if suo.mutation.TitleEnCleared() {
+		_spec.ClearField(series.FieldTitleEn, field.TypeString)
 	}
 	if suo.mutation.SeasonsCleared() {
 		edge := &sqlgraph.EdgeSpec{

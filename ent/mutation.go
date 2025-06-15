@@ -2468,6 +2468,7 @@ type SeriesMutation struct {
 	series_id      *string
 	title          *string
 	title_yomi     *string
+	title_en       *string
 	clearedFields  map[string]struct{}
 	seasons        map[int]struct{}
 	removedseasons map[int]struct{}
@@ -2696,6 +2697,55 @@ func (m *SeriesMutation) ResetTitleYomi() {
 	delete(m.clearedFields, series.FieldTitleYomi)
 }
 
+// SetTitleEn sets the "title_en" field.
+func (m *SeriesMutation) SetTitleEn(s string) {
+	m.title_en = &s
+}
+
+// TitleEn returns the value of the "title_en" field in the mutation.
+func (m *SeriesMutation) TitleEn() (r string, exists bool) {
+	v := m.title_en
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTitleEn returns the old "title_en" field's value of the Series entity.
+// If the Series object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SeriesMutation) OldTitleEn(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTitleEn is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTitleEn requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTitleEn: %w", err)
+	}
+	return oldValue.TitleEn, nil
+}
+
+// ClearTitleEn clears the value of the "title_en" field.
+func (m *SeriesMutation) ClearTitleEn() {
+	m.title_en = nil
+	m.clearedFields[series.FieldTitleEn] = struct{}{}
+}
+
+// TitleEnCleared returns if the "title_en" field was cleared in this mutation.
+func (m *SeriesMutation) TitleEnCleared() bool {
+	_, ok := m.clearedFields[series.FieldTitleEn]
+	return ok
+}
+
+// ResetTitleEn resets all changes to the "title_en" field.
+func (m *SeriesMutation) ResetTitleEn() {
+	m.title_en = nil
+	delete(m.clearedFields, series.FieldTitleEn)
+}
+
 // AddSeasonIDs adds the "seasons" edge to the Season entity by ids.
 func (m *SeriesMutation) AddSeasonIDs(ids ...int) {
 	if m.seasons == nil {
@@ -2784,7 +2834,7 @@ func (m *SeriesMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *SeriesMutation) Fields() []string {
-	fields := make([]string, 0, 3)
+	fields := make([]string, 0, 4)
 	if m.series_id != nil {
 		fields = append(fields, series.FieldSeriesID)
 	}
@@ -2793,6 +2843,9 @@ func (m *SeriesMutation) Fields() []string {
 	}
 	if m.title_yomi != nil {
 		fields = append(fields, series.FieldTitleYomi)
+	}
+	if m.title_en != nil {
+		fields = append(fields, series.FieldTitleEn)
 	}
 	return fields
 }
@@ -2808,6 +2861,8 @@ func (m *SeriesMutation) Field(name string) (ent.Value, bool) {
 		return m.Title()
 	case series.FieldTitleYomi:
 		return m.TitleYomi()
+	case series.FieldTitleEn:
+		return m.TitleEn()
 	}
 	return nil, false
 }
@@ -2823,6 +2878,8 @@ func (m *SeriesMutation) OldField(ctx context.Context, name string) (ent.Value, 
 		return m.OldTitle(ctx)
 	case series.FieldTitleYomi:
 		return m.OldTitleYomi(ctx)
+	case series.FieldTitleEn:
+		return m.OldTitleEn(ctx)
 	}
 	return nil, fmt.Errorf("unknown Series field %s", name)
 }
@@ -2852,6 +2909,13 @@ func (m *SeriesMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetTitleYomi(v)
+		return nil
+	case series.FieldTitleEn:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTitleEn(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Series field %s", name)
@@ -2886,6 +2950,9 @@ func (m *SeriesMutation) ClearedFields() []string {
 	if m.FieldCleared(series.FieldTitleYomi) {
 		fields = append(fields, series.FieldTitleYomi)
 	}
+	if m.FieldCleared(series.FieldTitleEn) {
+		fields = append(fields, series.FieldTitleEn)
+	}
 	return fields
 }
 
@@ -2903,6 +2970,9 @@ func (m *SeriesMutation) ClearField(name string) error {
 	case series.FieldTitleYomi:
 		m.ClearTitleYomi()
 		return nil
+	case series.FieldTitleEn:
+		m.ClearTitleEn()
+		return nil
 	}
 	return fmt.Errorf("unknown Series nullable field %s", name)
 }
@@ -2919,6 +2989,9 @@ func (m *SeriesMutation) ResetField(name string) error {
 		return nil
 	case series.FieldTitleYomi:
 		m.ResetTitleYomi()
+		return nil
+	case series.FieldTitleEn:
+		m.ResetTitleEn()
 		return nil
 	}
 	return fmt.Errorf("unknown Series field %s", name)

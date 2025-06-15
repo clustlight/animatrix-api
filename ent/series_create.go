@@ -46,6 +46,20 @@ func (sc *SeriesCreate) SetNillableTitleYomi(s *string) *SeriesCreate {
 	return sc
 }
 
+// SetTitleEn sets the "title_en" field.
+func (sc *SeriesCreate) SetTitleEn(s string) *SeriesCreate {
+	sc.mutation.SetTitleEn(s)
+	return sc
+}
+
+// SetNillableTitleEn sets the "title_en" field if the given value is not nil.
+func (sc *SeriesCreate) SetNillableTitleEn(s *string) *SeriesCreate {
+	if s != nil {
+		sc.SetTitleEn(*s)
+	}
+	return sc
+}
+
 // AddSeasonIDs adds the "seasons" edge to the Season entity by IDs.
 func (sc *SeriesCreate) AddSeasonIDs(ids ...int) *SeriesCreate {
 	sc.mutation.AddSeasonIDs(ids...)
@@ -138,6 +152,10 @@ func (sc *SeriesCreate) createSpec() (*Series, *sqlgraph.CreateSpec) {
 	if value, ok := sc.mutation.TitleYomi(); ok {
 		_spec.SetField(series.FieldTitleYomi, field.TypeString, value)
 		_node.TitleYomi = value
+	}
+	if value, ok := sc.mutation.TitleEn(); ok {
+		_spec.SetField(series.FieldTitleEn, field.TypeString, value)
+		_node.TitleEn = value
 	}
 	if nodes := sc.mutation.SeasonsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

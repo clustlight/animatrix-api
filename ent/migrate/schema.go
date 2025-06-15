@@ -74,6 +74,7 @@ var (
 		{Name: "series_id", Type: field.TypeString, Unique: true},
 		{Name: "title", Type: field.TypeString},
 		{Name: "title_yomi", Type: field.TypeString, Nullable: true},
+		{Name: "title_en", Type: field.TypeString, Nullable: true},
 	}
 	// SeriesTable holds the schema information for the "series" table.
 	SeriesTable = &schema.Table{

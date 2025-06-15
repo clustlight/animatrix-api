@@ -48,6 +48,7 @@ func CreateSeries(ctx context.Context, client *ent.Client, req *types.CreateSeri
 		SetSeriesID(req.SeriesID).
 		SetTitle(req.Title).
 		SetTitleYomi(req.TitleYomi).
+		SetTitleEn(req.TitleEn).
 		Save(ctx)
 	if err != nil {
 		return nil, err
@@ -72,6 +73,9 @@ func UpdateSeries(ctx context.Context, client *ent.Client, seriesID string, req 
 	}
 	if req.TitleYomi != nil {
 		upd = upd.SetTitleYomi(*req.TitleYomi)
+	}
+	if req.TitleEn != nil {
+		upd = upd.SetTitleEn(*req.TitleEn)
 	}
 	updatedSeries, err := upd.Save(ctx)
 	if err != nil {
