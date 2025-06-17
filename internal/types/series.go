@@ -3,11 +3,13 @@ package types
 import "fmt"
 
 type SeriesResponse struct {
-	SeriesID  string           `json:"series_id"`
-	Title     string           `json:"title"`
-	TitleYomi string           `json:"title_yomi"`
-	TitleEn   string           `json:"title_en"`
-	Seasons   []SeasonResponse `json:"seasons,omitempty"`
+	SeriesID     string           `json:"series_id"`
+	Title        string           `json:"title"`
+	TitleYomi    string           `json:"title_yomi"`
+	TitleEn      string           `json:"title_en"`
+	ThumbnailURL string           `json:"thumbnail_url"`
+	PortraitURL  string           `json:"portrait_url"`
+	Seasons      []SeasonResponse `json:"seasons,omitempty"`
 }
 
 type CreateSeriesRequest struct {

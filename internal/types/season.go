@@ -15,6 +15,7 @@ type SeasonResponse struct {
 	FirstMonth      int               `json:"first_month"`
 	FirstEndYear    int               `json:"first_end_year"`
 	FirstEndMonth   int               `json:"first_end_month"`
+	ThumbnailURL    string            `json:"thumbnail_url"`
 	Episodes        []EpisodeResponse `json:"episodes,omitempty"`
 }
 

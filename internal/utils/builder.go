@@ -1,20 +1,49 @@
 package utils
 
 import (
+	"net/url"
 	"os"
+	"regexp"
 	"strings"
 
 	"github.com/clustlight/animatrix-api/ent"
 	"github.com/clustlight/animatrix-api/internal/types"
 )
 
-func BuildSeriesResponse(series *ent.Series, withSeasons, withEpisodes bool) types.SeriesResponse {
-	resp := types.SeriesResponse{
-		SeriesID:  series.SeriesID,
-		Title:     series.Title,
-		TitleYomi: series.TitleYomi,
-		TitleEn:   series.TitleEn,
+func JoinURL(base, relPath string) string {
+	u, err := url.Parse(base)
+	if err != nil {
+		return ""
 	}
+	ref, err := url.Parse(relPath)
+	if err != nil {
+		return ""
+	}
+	return u.ResolveReference(ref).String()
+}
+
+func getObjectStorageURL() string {
+	return os.Getenv("OBJECT_STORAGE_URL")
+}
+
+func buildThumbnailURL(baseURL, id, suffix, ext string) string {
+	if suffix != "" {
+		return JoinURL(baseURL, id+"/thumbnail_"+suffix+"."+ext)
+	}
+	return JoinURL(baseURL, id+"/thumbnail."+ext)
+}
+
+func BuildSeriesResponse(series *ent.Series, withSeasons, withEpisodes bool) types.SeriesResponse {
+	baseURL := getObjectStorageURL()
+	resp := types.SeriesResponse{
+		SeriesID:     series.SeriesID,
+		Title:        series.Title,
+		TitleYomi:    series.TitleYomi,
+		TitleEn:      series.TitleEn,
+		ThumbnailURL: JoinURL(baseURL, series.SeriesID+"/thumbnail.png"),
+		PortraitURL:  JoinURL(baseURL, series.SeriesID+"/portrait.png"),
+	}
+
 	if withSeasons && series.Edges.Seasons != nil {
 		seasons := make([]types.SeasonResponse, 0, len(series.Edges.Seasons))
 		for _, season := range series.Edges.Seasons {
@@ -25,7 +54,27 @@ func BuildSeriesResponse(series *ent.Series, withSeasons, withEpisodes bool) typ
 	return resp
 }
 
+func extractSeriesIDAndSuffix(seasonID string) (seriesID, suffix string) {
+	idx := strings.Index(seasonID, "_")
+	if idx == -1 {
+		return seasonID, ""
+	}
+	seriesID = seasonID[:idx]
+	rest := seasonID[idx+1:]
+	re := regexp.MustCompile(`^s\d+`)
+	suffix = re.FindString(rest)
+	return
+}
+
 func BuildSeasonResponse(season *ent.Season, withEpisodes bool) types.SeasonResponse {
+	baseURL := getObjectStorageURL()
+	seriesID, suffix := extractSeriesIDAndSuffix(season.SeasonID)
+
+	thumbURL := ""
+	if suffix != "" {
+		thumbURL = buildThumbnailURL(baseURL, seriesID, suffix, "png")
+	}
+
 	resp := types.SeasonResponse{
 		SeasonID:        season.SeasonID,
 		SeasonTitle:     season.SeasonTitle,
@@ -37,7 +86,9 @@ func BuildSeasonResponse(season *ent.Season, withEpisodes bool) types.SeasonResp
 		FirstMonth:      season.FirstMonth,
 		FirstEndYear:    season.FirstEndYear,
 		FirstEndMonth:   season.FirstEndMonth,
+		ThumbnailURL:    thumbURL,
 	}
+
 	if withEpisodes && season.Edges.Episodes != nil {
 		episodes := make([]types.EpisodeResponse, 0, len(season.Edges.Episodes))
 		for _, ep := range season.Edges.Episodes {
@@ -49,10 +100,10 @@ func BuildSeasonResponse(season *ent.Season, withEpisodes bool) types.SeasonResp
 }
 
 func BuildEpisodeResponse(ep *ent.Episode) types.EpisodeResponse {
-	baseURL := os.Getenv("OBJECT_STORAGE_URL")
-	pathStr := strings.Replace(ep.EpisodeID, "_", "/", 1)
-	videoURL := baseURL + pathStr + "/video.mp4"
-	thumbURL := baseURL + pathStr + "/thumbnail.png"
+	baseURL := getObjectStorageURL()
+	epPath := strings.Replace(ep.EpisodeID, "_", "/", 1)
+	VideoUrl := JoinURL(baseURL, epPath+"/video.mp4")
+	ThumbnailUrl := JoinURL(baseURL, epPath+"/thumbnail.png")
 
 	return types.EpisodeResponse{
 		Title:          ep.Title,
@@ -65,7 +116,7 @@ func BuildEpisodeResponse(ep *ent.Episode) types.EpisodeResponse {
 		Width:          ep.Width,
 		Height:         ep.Height,
 		DynamicRange:   ep.DynamicRange,
-		VideoUrl:       videoURL,
-		ThumbnailUrl:   thumbURL,
+		VideoURL:       VideoUrl,
+		ThumbnailURL:   ThumbnailUrl,
 	}
 }
