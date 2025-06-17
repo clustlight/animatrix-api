@@ -5,10 +5,21 @@ import (
 	"github.com/clustlight/animatrix-api/internal/handler"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/cors"
 )
 
 func NewRouter(client *ent.Client) *chi.Mux {
 	r := chi.NewRouter()
+
+	r.Use(cors.Handler(cors.Options{
+		AllowedOrigins:   []string{"*"},
+		AllowedMethods:   []string{"GET", "POST", "PATCH"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		ExposedHeaders:   []string{"Link"},
+		AllowCredentials: false,
+		MaxAge:           300,
+	}))
+
 	r.Route("/v1", func(api chi.Router) {
 		api.Get("/series", handler.GetAllSeries(client))
 		api.Post("/series", handler.CreateSeries(client))
