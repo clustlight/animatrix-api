@@ -43,6 +43,8 @@ func NewRouter(client *ent.Client) *chi.Mux {
 		api.Patch("/episode/{episode_id}", handler.UpdateEpisode(client))
 
 		api.Post("/episode/bulk", handler.BulkCreateEpisodeHandler(client))
+
+		api.Get("/search", handler.SearchHandler(client))
 	})
 	return r
 }
