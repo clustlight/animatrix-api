@@ -115,3 +115,16 @@ func BulkCreateSeriesHandler(client *ent.Client) http.HandlerFunc {
 		json.NewEncoder(w).Encode(newSeriesList)
 	}
 }
+
+func GetRecentlyUpdatedSeriesHandler(client *ent.Client) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		series, err := controller.GetRecentlyUpdatedSeries(ctx, client)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(series)
+	}
+}

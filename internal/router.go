@@ -28,6 +28,8 @@ func NewRouter(client *ent.Client) *chi.Mux {
 
 		api.Post("/series/bulk", handler.BulkCreateSeriesHandler(client))
 
+		api.Get("/series/recent", handler.GetRecentlyUpdatedSeriesHandler(client))
+
 		api.Get("/season", handler.GetAllSeasons(client))
 		api.Post("/season", handler.CreateSeason(client))
 		api.Get("/season/{season_id}", handler.GetSeasonDetail(client))

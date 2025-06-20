@@ -2,12 +2,19 @@ package controller
 
 import (
 	"context"
+	"sort"
 
 	"github.com/clustlight/animatrix-api/ent"
+	"github.com/clustlight/animatrix-api/ent/episode"
 	"github.com/clustlight/animatrix-api/ent/series"
 	"github.com/clustlight/animatrix-api/internal/types"
 	"github.com/clustlight/animatrix-api/internal/utils"
 )
+
+type seriesWithTimestamp struct {
+	series    *ent.Series
+	timestamp int64
+}
 
 func GetAllSeries(ctx context.Context, client *ent.Client) (*[]types.SeriesResponse, error) {
 	series, err := client.Series.Query().All(ctx)
@@ -105,4 +112,50 @@ func BulkCreateSeries(ctx context.Context, client *ent.Client, seriesList []type
 		resps = append(resps, utils.BuildSeriesResponse(s, false, false))
 	}
 	return resps, nil
+}
+
+func GetRecentlyUpdatedSeries(ctx context.Context, client *ent.Client) ([]types.SeriesResponse, error) {
+	episodes, err := client.Episode.
+		Query().
+		Order(ent.Desc(episode.FieldTimestamp)).
+		WithSeason(func(sq *ent.SeasonQuery) {
+			sq.WithSeries()
+		}).
+		Limit(30).
+		All(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	seriesMap := make(map[string]seriesWithTimestamp)
+	for _, ep := range episodes {
+		season := ep.Edges.Season
+		if season == nil || season.Edges.Series == nil {
+			continue
+		}
+		seriesID := season.Edges.Series.SeriesID
+		if _, exists := seriesMap[seriesID]; !exists {
+			seriesMap[seriesID] = seriesWithTimestamp{
+				series:    season.Edges.Series,
+				timestamp: ep.Timestamp.Unix(),
+			}
+		}
+	}
+
+	// Convert map to slice and sort by timestamp
+	list := make([]seriesWithTimestamp, 0, len(seriesMap))
+	for _, v := range seriesMap {
+		list = append(list, v)
+	}
+	sort.Slice(list, func(i, j int) bool {
+		return list[i].timestamp > list[j].timestamp
+	})
+
+	// Build response
+	responses := make([]types.SeriesResponse, 0, len(list))
+	for _, s := range list {
+		resp := utils.BuildSeriesResponse(s.series, false, false)
+		responses = append(responses, resp)
+	}
+	return responses, nil
 }
