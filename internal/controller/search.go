@@ -5,10 +5,13 @@ import (
 	"strings"
 
 	"github.com/clustlight/animatrix-api/ent"
+	"github.com/clustlight/animatrix-api/ent/predicate"
 	"github.com/clustlight/animatrix-api/ent/season"
 	"github.com/clustlight/animatrix-api/ent/series"
 	"github.com/clustlight/animatrix-api/internal/types"
 	"github.com/clustlight/animatrix-api/internal/utils"
+	"github.com/ikawaha/kagome-dict/ipa"
+	"github.com/ikawaha/kagome/v2/tokenizer"
 )
 
 // Convert Katakana to Hiragana
@@ -33,7 +36,6 @@ func normalizeSymbols(s string) string {
 		case ' ', '　', '\t':
 			// remove all types of spaces
 		default:
-			// add other symbols if needed
 			b.WriteRune(r)
 		}
 	}
@@ -48,19 +50,74 @@ func normalizeJapanese(s string) string {
 	return s
 }
 
-// Search series by title or yomi, and also by related seasons
+// Tokenize Japanese text using kagome
+func tokenizeJapanese(text string) []string {
+	t, err := tokenizer.New(ipa.Dict(), tokenizer.OmitBosEos())
+	if err != nil {
+		panic(err)
+	}
+	tokens := t.Tokenize(text)
+	words := make([]string, 0, len(tokens))
+	for _, token := range tokens {
+		if token.Class == tokenizer.DUMMY {
+			continue
+		}
+		surface := token.Surface
+		if surface != "" {
+			words = append(words, surface)
+		}
+	}
+	return words
+}
+
+// Search series by title or yomi, and also by related seasons, using kagome tokens for DB search
 func SearchSeries(ctx context.Context, client *ent.Client, query string) ([]types.SeriesResponse, error) {
 	queryHira := normalizeJapanese(query)
+	tokens := tokenizeJapanese(query)
+	tokenSet := make(map[string]struct{})
+	for _, token := range tokens {
+		tokenSet[token] = struct{}{}
+		tokenSet[normalizeJapanese(token)] = struct{}{}
+	}
 
-	// Search by series title and yomi
+	// Search for series that contain all tokens (AND condition)
+	seriesPredicates := []predicate.Series{
+		series.TitleContainsFold(query),
+		series.TitleYomiContainsFold(query),
+		series.TitleYomiContainsFold(queryHira),
+		series.TitleEnContainsFold(query),
+	}
+	for token := range tokenSet {
+		if token == "" {
+			continue
+		}
+		seriesPredicates = append(seriesPredicates,
+			series.TitleContainsFold(token),
+			series.TitleYomiContainsFold(token),
+			series.TitleYomiContainsFold(normalizeJapanese(token)),
+			series.TitleEnContainsFold(token),
+		)
+	}
+
+	// Build AND condition for all tokens
+	andSeriesPredicates := []predicate.Series{}
+	for token := range tokenSet {
+		if token == "" {
+			continue
+		}
+		andSeriesPredicates = append(andSeriesPredicates,
+			series.Or(
+				series.TitleContainsFold(token),
+				series.TitleYomiContainsFold(token),
+				series.TitleYomiContainsFold(normalizeJapanese(token)),
+				series.TitleEnContainsFold(token),
+			),
+		)
+	}
+
 	seriesList, err := client.Series.Query().
 		Where(
-			series.Or(
-				series.TitleContainsFold(query),
-				series.TitleYomiContainsFold(query),
-				series.TitleYomiContainsFold(queryHira),
-				series.TitleEnContainsFold(query),
-			),
+			series.And(andSeriesPredicates...),
 		).
 		All(ctx)
 	if err != nil {
@@ -71,14 +128,24 @@ func SearchSeries(ctx context.Context, client *ent.Client, query string) ([]type
 		seriesMap[s.ID] = s
 	}
 
-	// Search by season title and yomi, add related series
+	// Similarly, build AND condition for seasons
+	andSeasonPredicates := []predicate.Season{}
+	for token := range tokenSet {
+		if token == "" {
+			continue
+		}
+		andSeasonPredicates = append(andSeasonPredicates,
+			season.Or(
+				season.SeasonTitleContainsFold(token),
+				season.SeasonTitleYomiContainsFold(token),
+				season.SeasonTitleYomiContainsFold(normalizeJapanese(token)),
+			),
+		)
+	}
+
 	seasons, err := client.Season.Query().
 		Where(
-			season.Or(
-				season.SeasonTitleContainsFold(query),
-				season.SeasonTitleYomiContainsFold(query),
-				season.SeasonTitleYomiContainsFold(queryHira),
-			),
+			season.And(andSeasonPredicates...),
 		).
 		WithSeries().
 		All(ctx)
@@ -91,7 +158,6 @@ func SearchSeries(ctx context.Context, client *ent.Client, query string) ([]type
 		}
 	}
 
-	// Remove duplicates and build response
 	seriesRes := make([]types.SeriesResponse, 0, len(seriesMap))
 	for _, s := range seriesMap {
 		seriesRes = append(seriesRes, utils.BuildSeriesResponse(s, false, false))
