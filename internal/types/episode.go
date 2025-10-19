@@ -18,6 +18,7 @@ type EpisodeResponse struct {
 	DynamicRange   string    `json:"dynamic_range"`
 	VideoURL       string    `json:"video_url"`
 	ThumbnailURL   string    `json:"thumbnail_url"`
+	Description    string    `json:"description"`
 }
 
 type CreateEpisodeRequest struct {
@@ -33,6 +34,7 @@ type CreateEpisodeRequest struct {
 	Height         int       `json:"height" validate:"required"`
 	DynamicRange   string    `json:"dynamic_range" validate:"required"`
 	Metadata       string    `json:"metadata,omitempty"` // Optional field for additional metadata
+	Description    string    `json:"description,omitempty"`
 }
 
 type UpdateEpisodeRequest struct {
@@ -46,6 +48,7 @@ type UpdateEpisodeRequest struct {
 	Height         *int       `json:"height,omitempty"`
 	DynamicRange   *string    `json:"dynamic_range,omitempty"`
 	Metadata       *string    `json:"metadata,omitempty"`
+	Description    *string    `json:"description,omitempty"`
 }
 
 func (r *CreateEpisodeRequest) ValidateRequired() error {

@@ -9,20 +9,23 @@ type SeriesResponse struct {
 	TitleEn      string           `json:"title_en"`
 	ThumbnailURL string           `json:"thumbnail_url"`
 	PortraitURL  string           `json:"portrait_url"`
+	Description  string           `json:"description"`
 	Seasons      []SeasonResponse `json:"seasons,omitempty"`
 }
 
 type CreateSeriesRequest struct {
-	SeriesID  string `json:"series_id" validate:"required"`
-	Title     string `json:"title" validate:"required"`
-	TitleYomi string `json:"title_yomi,omitempty"`
-	TitleEn   string `json:"title_en,omitempty"`
+	SeriesID    string `json:"series_id" validate:"required"`
+	Title       string `json:"title" validate:"required"`
+	TitleYomi   string `json:"title_yomi,omitempty"`
+	TitleEn     string `json:"title_en,omitempty"`
+	Description string `json:"description,omitempty"`
 }
 
 type UpdateSeriesRequest struct {
-	Title     *string `json:"title,omitempty"`
-	TitleYomi *string `json:"title_yomi,omitempty"`
-	TitleEn   *string `json:"title_en,omitempty"`
+	Title       *string `json:"title,omitempty"`
+	TitleYomi   *string `json:"title_yomi,omitempty"`
+	TitleEn     *string `json:"title_en,omitempty"`
+	Description *string `json:"description,omitempty"`
 }
 
 func (r *CreateSeriesRequest) ValidateRequired() error {

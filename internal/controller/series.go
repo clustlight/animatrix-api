@@ -62,6 +62,7 @@ func CreateSeries(ctx context.Context, client *ent.Client, req *types.CreateSeri
 		SetTitle(req.Title).
 		SetTitleYomi(req.TitleYomi).
 		SetTitleEn(req.TitleEn).
+		SetDescription(req.Description).
 		Save(ctx)
 	if err != nil {
 		return nil, err
@@ -90,6 +91,9 @@ func UpdateSeries(ctx context.Context, client *ent.Client, seriesID string, req 
 	if req.TitleEn != nil {
 		upd = upd.SetTitleEn(*req.TitleEn)
 	}
+	if req.Description != nil {
+		upd = upd.SetDescription(*req.Description)
+	}
 	updatedSeries, err := upd.Save(ctx)
 	if err != nil {
 		return nil, err
@@ -106,7 +110,8 @@ func BulkCreateSeries(ctx context.Context, client *ent.Client, seriesList []type
 			SetSeriesID(req.SeriesID).
 			SetTitle(req.Title).
 			SetTitleYomi(req.TitleYomi).
-			SetTitleEn(req.TitleEn)
+			SetTitleEn(req.TitleEn).
+			SetDescription(req.Description)
 		bulk = append(bulk, sc)
 	}
 	created, err := client.Series.CreateBulk(bulk...).Save(ctx)

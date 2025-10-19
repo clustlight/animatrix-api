@@ -61,6 +61,7 @@ func CreateEpisode(ctx context.Context, client *ent.Client, req *types.CreateEpi
 		SetHeight(req.Height).
 		SetDynamicRange(req.DynamicRange).
 		SetMetadata(req.Metadata).
+		SetDescription(req.Description).
 		SetSeason(season).
 		Save(ctx)
 	if err != nil {
@@ -112,6 +113,9 @@ func UpdateEpisode(ctx context.Context, client *ent.Client, episodeID string, re
 	if req.Metadata != nil {
 		update.SetMetadata(*req.Metadata)
 	}
+	if req.Description != nil {
+		update.SetDescription(*req.Description)
+	}
 
 	updatedEpisode, err := update.Save(ctx)
 	if err != nil {
@@ -145,6 +149,7 @@ func BulkCreateEpisode(ctx context.Context, client *ent.Client, episodeList []ty
 			SetHeight(req.Height).
 			SetDynamicRange(req.DynamicRange).
 			SetMetadata(req.Metadata).
+			SetDescription(req.Description).
 			SetSeason(season)
 		bulk = append(bulk, ec)
 	}
