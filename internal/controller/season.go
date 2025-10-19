@@ -12,6 +12,7 @@ import (
 
 func GetAllSeasons(ctx context.Context, client *ent.Client) (*[]types.SeasonResponse, error) {
 	seasons, err := client.Season.Query().
+		WithSeries().
 		WithEpisodes().
 		Order(ent.Asc("season_number")).
 		All(ctx)
@@ -32,6 +33,7 @@ func GetSeason(ctx context.Context, client *ent.Client, seasonID string) (*types
 	season, err := client.Season.
 		Query().
 		Where(season.SeasonIDEQ(seasonID)).
+		WithSeries().
 		WithEpisodes(func(q *ent.EpisodeQuery) {
 			q.Order(ent.Asc("episode_number"))
 		}).
