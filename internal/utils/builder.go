@@ -40,6 +40,7 @@ func BuildSeriesResponse(series *ent.Series, withSeasons, withEpisodes bool) typ
 		Title:        series.Title,
 		TitleYomi:    series.TitleYomi,
 		TitleEn:      series.TitleEn,
+		Description:  series.Description,
 		ThumbnailURL: JoinURL(baseURL, series.SeriesID+"/thumbnail.png"),
 		PortraitURL:  JoinURL(baseURL, series.SeriesID+"/portrait.png"),
 	}
@@ -112,6 +113,7 @@ func BuildEpisodeResponse(ep *ent.Episode) types.EpisodeResponse {
 
 	return types.EpisodeResponse{
 		Title:          ep.Title,
+		Description:    ep.Description,
 		EpisodeID:      ep.EpisodeID,
 		EpisodeNumber:  ep.EpisodeNumber,
 		Duration:       ep.Duration,
