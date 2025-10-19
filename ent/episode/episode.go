@@ -12,10 +12,12 @@ const (
 	Label = "episode"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
-	// FieldTitle holds the string denoting the title field in the database.
-	FieldTitle = "title"
 	// FieldEpisodeID holds the string denoting the episode_id field in the database.
 	FieldEpisodeID = "episode_id"
+	// FieldTitle holds the string denoting the title field in the database.
+	FieldTitle = "title"
+	// FieldDescription holds the string denoting the description field in the database.
+	FieldDescription = "description"
 	// FieldEpisodeNumber holds the string denoting the episode_number field in the database.
 	FieldEpisodeNumber = "episode_number"
 	// FieldDuration holds the string denoting the duration field in the database.
@@ -50,8 +52,9 @@ const (
 // Columns holds all SQL columns for episode fields.
 var Columns = []string{
 	FieldID,
-	FieldTitle,
 	FieldEpisodeID,
+	FieldTitle,
+	FieldDescription,
 	FieldEpisodeNumber,
 	FieldDuration,
 	FieldDurationString,
@@ -84,6 +87,13 @@ func ValidColumn(column string) bool {
 	return false
 }
 
+var (
+	// EpisodeIDValidator is a validator for the "episode_id" field. It is called by the builders before save.
+	EpisodeIDValidator func(string) error
+	// TitleValidator is a validator for the "title" field. It is called by the builders before save.
+	TitleValidator func(string) error
+)
+
 // OrderOption defines the ordering options for the Episode queries.
 type OrderOption func(*sql.Selector)
 
@@ -92,14 +102,19 @@ func ByID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldID, opts...).ToFunc()
 }
 
+// ByEpisodeID orders the results by the episode_id field.
+func ByEpisodeID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldEpisodeID, opts...).ToFunc()
+}
+
 // ByTitle orders the results by the title field.
 func ByTitle(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldTitle, opts...).ToFunc()
 }
 
-// ByEpisodeID orders the results by the episode_id field.
-func ByEpisodeID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldEpisodeID, opts...).ToFunc()
+// ByDescription orders the results by the description field.
+func ByDescription(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDescription, opts...).ToFunc()
 }
 
 // ByEpisodeNumber orders the results by the episode_number field.

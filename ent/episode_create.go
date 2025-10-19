@@ -21,15 +21,29 @@ type EpisodeCreate struct {
 	hooks    []Hook
 }
 
+// SetEpisodeID sets the "episode_id" field.
+func (ec *EpisodeCreate) SetEpisodeID(s string) *EpisodeCreate {
+	ec.mutation.SetEpisodeID(s)
+	return ec
+}
+
 // SetTitle sets the "title" field.
 func (ec *EpisodeCreate) SetTitle(s string) *EpisodeCreate {
 	ec.mutation.SetTitle(s)
 	return ec
 }
 
-// SetEpisodeID sets the "episode_id" field.
-func (ec *EpisodeCreate) SetEpisodeID(s string) *EpisodeCreate {
-	ec.mutation.SetEpisodeID(s)
+// SetDescription sets the "description" field.
+func (ec *EpisodeCreate) SetDescription(s string) *EpisodeCreate {
+	ec.mutation.SetDescription(s)
+	return ec
+}
+
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (ec *EpisodeCreate) SetNillableDescription(s *string) *EpisodeCreate {
+	if s != nil {
+		ec.SetDescription(*s)
+	}
 	return ec
 }
 
@@ -132,11 +146,21 @@ func (ec *EpisodeCreate) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (ec *EpisodeCreate) check() error {
+	if _, ok := ec.mutation.EpisodeID(); !ok {
+		return &ValidationError{Name: "episode_id", err: errors.New(`ent: missing required field "Episode.episode_id"`)}
+	}
+	if v, ok := ec.mutation.EpisodeID(); ok {
+		if err := episode.EpisodeIDValidator(v); err != nil {
+			return &ValidationError{Name: "episode_id", err: fmt.Errorf(`ent: validator failed for field "Episode.episode_id": %w`, err)}
+		}
+	}
 	if _, ok := ec.mutation.Title(); !ok {
 		return &ValidationError{Name: "title", err: errors.New(`ent: missing required field "Episode.title"`)}
 	}
-	if _, ok := ec.mutation.EpisodeID(); !ok {
-		return &ValidationError{Name: "episode_id", err: errors.New(`ent: missing required field "Episode.episode_id"`)}
+	if v, ok := ec.mutation.Title(); ok {
+		if err := episode.TitleValidator(v); err != nil {
+			return &ValidationError{Name: "title", err: fmt.Errorf(`ent: validator failed for field "Episode.title": %w`, err)}
+		}
 	}
 	if _, ok := ec.mutation.EpisodeNumber(); !ok {
 		return &ValidationError{Name: "episode_number", err: errors.New(`ent: missing required field "Episode.episode_number"`)}
@@ -194,13 +218,17 @@ func (ec *EpisodeCreate) createSpec() (*Episode, *sqlgraph.CreateSpec) {
 		_node = &Episode{config: ec.config}
 		_spec = sqlgraph.NewCreateSpec(episode.Table, sqlgraph.NewFieldSpec(episode.FieldID, field.TypeInt))
 	)
+	if value, ok := ec.mutation.EpisodeID(); ok {
+		_spec.SetField(episode.FieldEpisodeID, field.TypeString, value)
+		_node.EpisodeID = value
+	}
 	if value, ok := ec.mutation.Title(); ok {
 		_spec.SetField(episode.FieldTitle, field.TypeString, value)
 		_node.Title = value
 	}
-	if value, ok := ec.mutation.EpisodeID(); ok {
-		_spec.SetField(episode.FieldEpisodeID, field.TypeString, value)
-		_node.EpisodeID = value
+	if value, ok := ec.mutation.Description(); ok {
+		_spec.SetField(episode.FieldDescription, field.TypeString, value)
+		_node.Description = value
 	}
 	if value, ok := ec.mutation.EpisodeNumber(); ok {
 		_spec.SetField(episode.FieldEpisodeNumber, field.TypeInt, value)

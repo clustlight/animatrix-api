@@ -200,8 +200,18 @@ func (sc *SeasonCreate) check() error {
 	if _, ok := sc.mutation.SeasonID(); !ok {
 		return &ValidationError{Name: "season_id", err: errors.New(`ent: missing required field "Season.season_id"`)}
 	}
+	if v, ok := sc.mutation.SeasonID(); ok {
+		if err := season.SeasonIDValidator(v); err != nil {
+			return &ValidationError{Name: "season_id", err: fmt.Errorf(`ent: validator failed for field "Season.season_id": %w`, err)}
+		}
+	}
 	if _, ok := sc.mutation.SeasonTitle(); !ok {
 		return &ValidationError{Name: "season_title", err: errors.New(`ent: missing required field "Season.season_title"`)}
+	}
+	if v, ok := sc.mutation.SeasonTitle(); ok {
+		if err := season.SeasonTitleValidator(v); err != nil {
+			return &ValidationError{Name: "season_title", err: fmt.Errorf(`ent: validator failed for field "Season.season_title": %w`, err)}
+		}
 	}
 	if _, ok := sc.mutation.SeasonNumber(); !ok {
 		return &ValidationError{Name: "season_number", err: errors.New(`ent: missing required field "Season.season_number"`)}

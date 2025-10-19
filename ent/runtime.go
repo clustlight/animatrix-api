@@ -2,8 +2,45 @@
 
 package ent
 
+import (
+	"github.com/clustlight/animatrix-api/ent/episode"
+	"github.com/clustlight/animatrix-api/ent/schema"
+	"github.com/clustlight/animatrix-api/ent/season"
+	"github.com/clustlight/animatrix-api/ent/series"
+)
+
 // The init function reads all schema descriptors with runtime code
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	episodeFields := schema.Episode{}.Fields()
+	_ = episodeFields
+	// episodeDescEpisodeID is the schema descriptor for episode_id field.
+	episodeDescEpisodeID := episodeFields[0].Descriptor()
+	// episode.EpisodeIDValidator is a validator for the "episode_id" field. It is called by the builders before save.
+	episode.EpisodeIDValidator = episodeDescEpisodeID.Validators[0].(func(string) error)
+	// episodeDescTitle is the schema descriptor for title field.
+	episodeDescTitle := episodeFields[1].Descriptor()
+	// episode.TitleValidator is a validator for the "title" field. It is called by the builders before save.
+	episode.TitleValidator = episodeDescTitle.Validators[0].(func(string) error)
+	seasonFields := schema.Season{}.Fields()
+	_ = seasonFields
+	// seasonDescSeasonID is the schema descriptor for season_id field.
+	seasonDescSeasonID := seasonFields[0].Descriptor()
+	// season.SeasonIDValidator is a validator for the "season_id" field. It is called by the builders before save.
+	season.SeasonIDValidator = seasonDescSeasonID.Validators[0].(func(string) error)
+	// seasonDescSeasonTitle is the schema descriptor for season_title field.
+	seasonDescSeasonTitle := seasonFields[1].Descriptor()
+	// season.SeasonTitleValidator is a validator for the "season_title" field. It is called by the builders before save.
+	season.SeasonTitleValidator = seasonDescSeasonTitle.Validators[0].(func(string) error)
+	seriesFields := schema.Series{}.Fields()
+	_ = seriesFields
+	// seriesDescSeriesID is the schema descriptor for series_id field.
+	seriesDescSeriesID := seriesFields[0].Descriptor()
+	// series.SeriesIDValidator is a validator for the "series_id" field. It is called by the builders before save.
+	series.SeriesIDValidator = seriesDescSeriesID.Validators[0].(func(string) error)
+	// seriesDescTitle is the schema descriptor for title field.
+	seriesDescTitle := seriesFields[1].Descriptor()
+	// series.TitleValidator is a validator for the "title" field. It is called by the builders before save.
+	series.TitleValidator = seriesDescTitle.Validators[0].(func(string) error)
 }

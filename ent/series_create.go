@@ -60,6 +60,20 @@ func (sc *SeriesCreate) SetNillableTitleEn(s *string) *SeriesCreate {
 	return sc
 }
 
+// SetDescription sets the "description" field.
+func (sc *SeriesCreate) SetDescription(s string) *SeriesCreate {
+	sc.mutation.SetDescription(s)
+	return sc
+}
+
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (sc *SeriesCreate) SetNillableDescription(s *string) *SeriesCreate {
+	if s != nil {
+		sc.SetDescription(*s)
+	}
+	return sc
+}
+
 // AddSeasonIDs adds the "seasons" edge to the Season entity by IDs.
 func (sc *SeriesCreate) AddSeasonIDs(ids ...int) *SeriesCreate {
 	sc.mutation.AddSeasonIDs(ids...)
@@ -112,8 +126,18 @@ func (sc *SeriesCreate) check() error {
 	if _, ok := sc.mutation.SeriesID(); !ok {
 		return &ValidationError{Name: "series_id", err: errors.New(`ent: missing required field "Series.series_id"`)}
 	}
+	if v, ok := sc.mutation.SeriesID(); ok {
+		if err := series.SeriesIDValidator(v); err != nil {
+			return &ValidationError{Name: "series_id", err: fmt.Errorf(`ent: validator failed for field "Series.series_id": %w`, err)}
+		}
+	}
 	if _, ok := sc.mutation.Title(); !ok {
 		return &ValidationError{Name: "title", err: errors.New(`ent: missing required field "Series.title"`)}
+	}
+	if v, ok := sc.mutation.Title(); ok {
+		if err := series.TitleValidator(v); err != nil {
+			return &ValidationError{Name: "title", err: fmt.Errorf(`ent: validator failed for field "Series.title": %w`, err)}
+		}
 	}
 	return nil
 }
@@ -156,6 +180,10 @@ func (sc *SeriesCreate) createSpec() (*Series, *sqlgraph.CreateSpec) {
 	if value, ok := sc.mutation.TitleEn(); ok {
 		_spec.SetField(series.FieldTitleEn, field.TypeString, value)
 		_node.TitleEn = value
+	}
+	if value, ok := sc.mutation.Description(); ok {
+		_spec.SetField(series.FieldDescription, field.TypeString, value)
+		_node.Description = value
 	}
 	if nodes := sc.mutation.SeasonsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

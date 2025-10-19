@@ -55,14 +55,19 @@ func IDLTE(id int) predicate.Episode {
 	return predicate.Episode(sql.FieldLTE(FieldID, id))
 }
 
+// EpisodeID applies equality check predicate on the "episode_id" field. It's identical to EpisodeIDEQ.
+func EpisodeID(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldEQ(FieldEpisodeID, v))
+}
+
 // Title applies equality check predicate on the "title" field. It's identical to TitleEQ.
 func Title(v string) predicate.Episode {
 	return predicate.Episode(sql.FieldEQ(FieldTitle, v))
 }
 
-// EpisodeID applies equality check predicate on the "episode_id" field. It's identical to EpisodeIDEQ.
-func EpisodeID(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldEQ(FieldEpisodeID, v))
+// Description applies equality check predicate on the "description" field. It's identical to DescriptionEQ.
+func Description(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldEQ(FieldDescription, v))
 }
 
 // EpisodeNumber applies equality check predicate on the "episode_number" field. It's identical to EpisodeNumberEQ.
@@ -108,6 +113,71 @@ func DynamicRange(v string) predicate.Episode {
 // Metadata applies equality check predicate on the "metadata" field. It's identical to MetadataEQ.
 func Metadata(v string) predicate.Episode {
 	return predicate.Episode(sql.FieldEQ(FieldMetadata, v))
+}
+
+// EpisodeIDEQ applies the EQ predicate on the "episode_id" field.
+func EpisodeIDEQ(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldEQ(FieldEpisodeID, v))
+}
+
+// EpisodeIDNEQ applies the NEQ predicate on the "episode_id" field.
+func EpisodeIDNEQ(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldNEQ(FieldEpisodeID, v))
+}
+
+// EpisodeIDIn applies the In predicate on the "episode_id" field.
+func EpisodeIDIn(vs ...string) predicate.Episode {
+	return predicate.Episode(sql.FieldIn(FieldEpisodeID, vs...))
+}
+
+// EpisodeIDNotIn applies the NotIn predicate on the "episode_id" field.
+func EpisodeIDNotIn(vs ...string) predicate.Episode {
+	return predicate.Episode(sql.FieldNotIn(FieldEpisodeID, vs...))
+}
+
+// EpisodeIDGT applies the GT predicate on the "episode_id" field.
+func EpisodeIDGT(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldGT(FieldEpisodeID, v))
+}
+
+// EpisodeIDGTE applies the GTE predicate on the "episode_id" field.
+func EpisodeIDGTE(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldGTE(FieldEpisodeID, v))
+}
+
+// EpisodeIDLT applies the LT predicate on the "episode_id" field.
+func EpisodeIDLT(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldLT(FieldEpisodeID, v))
+}
+
+// EpisodeIDLTE applies the LTE predicate on the "episode_id" field.
+func EpisodeIDLTE(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldLTE(FieldEpisodeID, v))
+}
+
+// EpisodeIDContains applies the Contains predicate on the "episode_id" field.
+func EpisodeIDContains(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldContains(FieldEpisodeID, v))
+}
+
+// EpisodeIDHasPrefix applies the HasPrefix predicate on the "episode_id" field.
+func EpisodeIDHasPrefix(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldHasPrefix(FieldEpisodeID, v))
+}
+
+// EpisodeIDHasSuffix applies the HasSuffix predicate on the "episode_id" field.
+func EpisodeIDHasSuffix(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldHasSuffix(FieldEpisodeID, v))
+}
+
+// EpisodeIDEqualFold applies the EqualFold predicate on the "episode_id" field.
+func EpisodeIDEqualFold(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldEqualFold(FieldEpisodeID, v))
+}
+
+// EpisodeIDContainsFold applies the ContainsFold predicate on the "episode_id" field.
+func EpisodeIDContainsFold(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldContainsFold(FieldEpisodeID, v))
 }
 
 // TitleEQ applies the EQ predicate on the "title" field.
@@ -175,69 +245,79 @@ func TitleContainsFold(v string) predicate.Episode {
 	return predicate.Episode(sql.FieldContainsFold(FieldTitle, v))
 }
 
-// EpisodeIDEQ applies the EQ predicate on the "episode_id" field.
-func EpisodeIDEQ(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldEQ(FieldEpisodeID, v))
+// DescriptionEQ applies the EQ predicate on the "description" field.
+func DescriptionEQ(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldEQ(FieldDescription, v))
 }
 
-// EpisodeIDNEQ applies the NEQ predicate on the "episode_id" field.
-func EpisodeIDNEQ(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldNEQ(FieldEpisodeID, v))
+// DescriptionNEQ applies the NEQ predicate on the "description" field.
+func DescriptionNEQ(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldNEQ(FieldDescription, v))
 }
 
-// EpisodeIDIn applies the In predicate on the "episode_id" field.
-func EpisodeIDIn(vs ...string) predicate.Episode {
-	return predicate.Episode(sql.FieldIn(FieldEpisodeID, vs...))
+// DescriptionIn applies the In predicate on the "description" field.
+func DescriptionIn(vs ...string) predicate.Episode {
+	return predicate.Episode(sql.FieldIn(FieldDescription, vs...))
 }
 
-// EpisodeIDNotIn applies the NotIn predicate on the "episode_id" field.
-func EpisodeIDNotIn(vs ...string) predicate.Episode {
-	return predicate.Episode(sql.FieldNotIn(FieldEpisodeID, vs...))
+// DescriptionNotIn applies the NotIn predicate on the "description" field.
+func DescriptionNotIn(vs ...string) predicate.Episode {
+	return predicate.Episode(sql.FieldNotIn(FieldDescription, vs...))
 }
 
-// EpisodeIDGT applies the GT predicate on the "episode_id" field.
-func EpisodeIDGT(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldGT(FieldEpisodeID, v))
+// DescriptionGT applies the GT predicate on the "description" field.
+func DescriptionGT(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldGT(FieldDescription, v))
 }
 
-// EpisodeIDGTE applies the GTE predicate on the "episode_id" field.
-func EpisodeIDGTE(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldGTE(FieldEpisodeID, v))
+// DescriptionGTE applies the GTE predicate on the "description" field.
+func DescriptionGTE(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldGTE(FieldDescription, v))
 }
 
-// EpisodeIDLT applies the LT predicate on the "episode_id" field.
-func EpisodeIDLT(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldLT(FieldEpisodeID, v))
+// DescriptionLT applies the LT predicate on the "description" field.
+func DescriptionLT(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldLT(FieldDescription, v))
 }
 
-// EpisodeIDLTE applies the LTE predicate on the "episode_id" field.
-func EpisodeIDLTE(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldLTE(FieldEpisodeID, v))
+// DescriptionLTE applies the LTE predicate on the "description" field.
+func DescriptionLTE(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldLTE(FieldDescription, v))
 }
 
-// EpisodeIDContains applies the Contains predicate on the "episode_id" field.
-func EpisodeIDContains(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldContains(FieldEpisodeID, v))
+// DescriptionContains applies the Contains predicate on the "description" field.
+func DescriptionContains(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldContains(FieldDescription, v))
 }
 
-// EpisodeIDHasPrefix applies the HasPrefix predicate on the "episode_id" field.
-func EpisodeIDHasPrefix(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldHasPrefix(FieldEpisodeID, v))
+// DescriptionHasPrefix applies the HasPrefix predicate on the "description" field.
+func DescriptionHasPrefix(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldHasPrefix(FieldDescription, v))
 }
 
-// EpisodeIDHasSuffix applies the HasSuffix predicate on the "episode_id" field.
-func EpisodeIDHasSuffix(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldHasSuffix(FieldEpisodeID, v))
+// DescriptionHasSuffix applies the HasSuffix predicate on the "description" field.
+func DescriptionHasSuffix(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldHasSuffix(FieldDescription, v))
 }
 
-// EpisodeIDEqualFold applies the EqualFold predicate on the "episode_id" field.
-func EpisodeIDEqualFold(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldEqualFold(FieldEpisodeID, v))
+// DescriptionIsNil applies the IsNil predicate on the "description" field.
+func DescriptionIsNil() predicate.Episode {
+	return predicate.Episode(sql.FieldIsNull(FieldDescription))
 }
 
-// EpisodeIDContainsFold applies the ContainsFold predicate on the "episode_id" field.
-func EpisodeIDContainsFold(v string) predicate.Episode {
-	return predicate.Episode(sql.FieldContainsFold(FieldEpisodeID, v))
+// DescriptionNotNil applies the NotNil predicate on the "description" field.
+func DescriptionNotNil() predicate.Episode {
+	return predicate.Episode(sql.FieldNotNull(FieldDescription))
+}
+
+// DescriptionEqualFold applies the EqualFold predicate on the "description" field.
+func DescriptionEqualFold(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldEqualFold(FieldDescription, v))
+}
+
+// DescriptionContainsFold applies the ContainsFold predicate on the "description" field.
+func DescriptionContainsFold(v string) predicate.Episode {
+	return predicate.Episode(sql.FieldContainsFold(FieldDescription, v))
 }
 
 // EpisodeNumberEQ applies the EQ predicate on the "episode_number" field.

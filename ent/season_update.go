@@ -340,6 +340,16 @@ func (su *SeasonUpdate) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (su *SeasonUpdate) check() error {
+	if v, ok := su.mutation.SeasonID(); ok {
+		if err := season.SeasonIDValidator(v); err != nil {
+			return &ValidationError{Name: "season_id", err: fmt.Errorf(`ent: validator failed for field "Season.season_id": %w`, err)}
+		}
+	}
+	if v, ok := su.mutation.SeasonTitle(); ok {
+		if err := season.SeasonTitleValidator(v); err != nil {
+			return &ValidationError{Name: "season_title", err: fmt.Errorf(`ent: validator failed for field "Season.season_title": %w`, err)}
+		}
+	}
 	if su.mutation.SeriesCleared() && len(su.mutation.SeriesIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Season.series"`)
 	}
@@ -845,6 +855,16 @@ func (suo *SeasonUpdateOne) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (suo *SeasonUpdateOne) check() error {
+	if v, ok := suo.mutation.SeasonID(); ok {
+		if err := season.SeasonIDValidator(v); err != nil {
+			return &ValidationError{Name: "season_id", err: fmt.Errorf(`ent: validator failed for field "Season.season_id": %w`, err)}
+		}
+	}
+	if v, ok := suo.mutation.SeasonTitle(); ok {
+		if err := season.SeasonTitleValidator(v); err != nil {
+			return &ValidationError{Name: "season_title", err: fmt.Errorf(`ent: validator failed for field "Season.season_title": %w`, err)}
+		}
+	}
 	if suo.mutation.SeriesCleared() && len(suo.mutation.SeriesIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Season.series"`)
 	}

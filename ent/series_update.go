@@ -96,6 +96,26 @@ func (su *SeriesUpdate) ClearTitleEn() *SeriesUpdate {
 	return su
 }
 
+// SetDescription sets the "description" field.
+func (su *SeriesUpdate) SetDescription(s string) *SeriesUpdate {
+	su.mutation.SetDescription(s)
+	return su
+}
+
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (su *SeriesUpdate) SetNillableDescription(s *string) *SeriesUpdate {
+	if s != nil {
+		su.SetDescription(*s)
+	}
+	return su
+}
+
+// ClearDescription clears the value of the "description" field.
+func (su *SeriesUpdate) ClearDescription() *SeriesUpdate {
+	su.mutation.ClearDescription()
+	return su
+}
+
 // AddSeasonIDs adds the "seasons" edge to the Season entity by IDs.
 func (su *SeriesUpdate) AddSeasonIDs(ids ...int) *SeriesUpdate {
 	su.mutation.AddSeasonIDs(ids...)
@@ -164,7 +184,25 @@ func (su *SeriesUpdate) ExecX(ctx context.Context) {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (su *SeriesUpdate) check() error {
+	if v, ok := su.mutation.SeriesID(); ok {
+		if err := series.SeriesIDValidator(v); err != nil {
+			return &ValidationError{Name: "series_id", err: fmt.Errorf(`ent: validator failed for field "Series.series_id": %w`, err)}
+		}
+	}
+	if v, ok := su.mutation.Title(); ok {
+		if err := series.TitleValidator(v); err != nil {
+			return &ValidationError{Name: "title", err: fmt.Errorf(`ent: validator failed for field "Series.title": %w`, err)}
+		}
+	}
+	return nil
+}
+
 func (su *SeriesUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := su.check(); err != nil {
+		return n, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(series.Table, series.Columns, sqlgraph.NewFieldSpec(series.FieldID, field.TypeInt))
 	if ps := su.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
@@ -190,6 +228,12 @@ func (su *SeriesUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if su.mutation.TitleEnCleared() {
 		_spec.ClearField(series.FieldTitleEn, field.TypeString)
+	}
+	if value, ok := su.mutation.Description(); ok {
+		_spec.SetField(series.FieldDescription, field.TypeString, value)
+	}
+	if su.mutation.DescriptionCleared() {
+		_spec.ClearField(series.FieldDescription, field.TypeString)
 	}
 	if su.mutation.SeasonsCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -324,6 +368,26 @@ func (suo *SeriesUpdateOne) ClearTitleEn() *SeriesUpdateOne {
 	return suo
 }
 
+// SetDescription sets the "description" field.
+func (suo *SeriesUpdateOne) SetDescription(s string) *SeriesUpdateOne {
+	suo.mutation.SetDescription(s)
+	return suo
+}
+
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (suo *SeriesUpdateOne) SetNillableDescription(s *string) *SeriesUpdateOne {
+	if s != nil {
+		suo.SetDescription(*s)
+	}
+	return suo
+}
+
+// ClearDescription clears the value of the "description" field.
+func (suo *SeriesUpdateOne) ClearDescription() *SeriesUpdateOne {
+	suo.mutation.ClearDescription()
+	return suo
+}
+
 // AddSeasonIDs adds the "seasons" edge to the Season entity by IDs.
 func (suo *SeriesUpdateOne) AddSeasonIDs(ids ...int) *SeriesUpdateOne {
 	suo.mutation.AddSeasonIDs(ids...)
@@ -405,7 +469,25 @@ func (suo *SeriesUpdateOne) ExecX(ctx context.Context) {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (suo *SeriesUpdateOne) check() error {
+	if v, ok := suo.mutation.SeriesID(); ok {
+		if err := series.SeriesIDValidator(v); err != nil {
+			return &ValidationError{Name: "series_id", err: fmt.Errorf(`ent: validator failed for field "Series.series_id": %w`, err)}
+		}
+	}
+	if v, ok := suo.mutation.Title(); ok {
+		if err := series.TitleValidator(v); err != nil {
+			return &ValidationError{Name: "title", err: fmt.Errorf(`ent: validator failed for field "Series.title": %w`, err)}
+		}
+	}
+	return nil
+}
+
 func (suo *SeriesUpdateOne) sqlSave(ctx context.Context) (_node *Series, err error) {
+	if err := suo.check(); err != nil {
+		return _node, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(series.Table, series.Columns, sqlgraph.NewFieldSpec(series.FieldID, field.TypeInt))
 	id, ok := suo.mutation.ID()
 	if !ok {
@@ -448,6 +530,12 @@ func (suo *SeriesUpdateOne) sqlSave(ctx context.Context) (_node *Series, err err
 	}
 	if suo.mutation.TitleEnCleared() {
 		_spec.ClearField(series.FieldTitleEn, field.TypeString)
+	}
+	if value, ok := suo.mutation.Description(); ok {
+		_spec.SetField(series.FieldDescription, field.TypeString, value)
+	}
+	if suo.mutation.DescriptionCleared() {
+		_spec.ClearField(series.FieldDescription, field.TypeString)
 	}
 	if suo.mutation.SeasonsCleared() {
 		edge := &sqlgraph.EdgeSpec{

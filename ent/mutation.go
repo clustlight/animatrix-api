@@ -37,8 +37,9 @@ type EpisodeMutation struct {
 	op                Op
 	typ               string
 	id                *int
-	title             *string
 	episode_id        *string
+	title             *string
+	description       *string
 	episode_number    *int
 	addepisode_number *int
 	duration          *float64
@@ -158,6 +159,42 @@ func (m *EpisodeMutation) IDs(ctx context.Context) ([]int, error) {
 	}
 }
 
+// SetEpisodeID sets the "episode_id" field.
+func (m *EpisodeMutation) SetEpisodeID(s string) {
+	m.episode_id = &s
+}
+
+// EpisodeID returns the value of the "episode_id" field in the mutation.
+func (m *EpisodeMutation) EpisodeID() (r string, exists bool) {
+	v := m.episode_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEpisodeID returns the old "episode_id" field's value of the Episode entity.
+// If the Episode object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EpisodeMutation) OldEpisodeID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEpisodeID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEpisodeID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEpisodeID: %w", err)
+	}
+	return oldValue.EpisodeID, nil
+}
+
+// ResetEpisodeID resets all changes to the "episode_id" field.
+func (m *EpisodeMutation) ResetEpisodeID() {
+	m.episode_id = nil
+}
+
 // SetTitle sets the "title" field.
 func (m *EpisodeMutation) SetTitle(s string) {
 	m.title = &s
@@ -194,40 +231,53 @@ func (m *EpisodeMutation) ResetTitle() {
 	m.title = nil
 }
 
-// SetEpisodeID sets the "episode_id" field.
-func (m *EpisodeMutation) SetEpisodeID(s string) {
-	m.episode_id = &s
+// SetDescription sets the "description" field.
+func (m *EpisodeMutation) SetDescription(s string) {
+	m.description = &s
 }
 
-// EpisodeID returns the value of the "episode_id" field in the mutation.
-func (m *EpisodeMutation) EpisodeID() (r string, exists bool) {
-	v := m.episode_id
+// Description returns the value of the "description" field in the mutation.
+func (m *EpisodeMutation) Description() (r string, exists bool) {
+	v := m.description
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldEpisodeID returns the old "episode_id" field's value of the Episode entity.
+// OldDescription returns the old "description" field's value of the Episode entity.
 // If the Episode object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EpisodeMutation) OldEpisodeID(ctx context.Context) (v string, err error) {
+func (m *EpisodeMutation) OldDescription(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldEpisodeID is only allowed on UpdateOne operations")
+		return v, errors.New("OldDescription is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldEpisodeID requires an ID field in the mutation")
+		return v, errors.New("OldDescription requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldEpisodeID: %w", err)
+		return v, fmt.Errorf("querying old value for OldDescription: %w", err)
 	}
-	return oldValue.EpisodeID, nil
+	return oldValue.Description, nil
 }
 
-// ResetEpisodeID resets all changes to the "episode_id" field.
-func (m *EpisodeMutation) ResetEpisodeID() {
-	m.episode_id = nil
+// ClearDescription clears the value of the "description" field.
+func (m *EpisodeMutation) ClearDescription() {
+	m.description = nil
+	m.clearedFields[episode.FieldDescription] = struct{}{}
+}
+
+// DescriptionCleared returns if the "description" field was cleared in this mutation.
+func (m *EpisodeMutation) DescriptionCleared() bool {
+	_, ok := m.clearedFields[episode.FieldDescription]
+	return ok
+}
+
+// ResetDescription resets all changes to the "description" field.
+func (m *EpisodeMutation) ResetDescription() {
+	m.description = nil
+	delete(m.clearedFields, episode.FieldDescription)
 }
 
 // SetEpisodeNumber sets the "episode_number" field.
@@ -707,12 +757,15 @@ func (m *EpisodeMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *EpisodeMutation) Fields() []string {
-	fields := make([]string, 0, 11)
+	fields := make([]string, 0, 12)
+	if m.episode_id != nil {
+		fields = append(fields, episode.FieldEpisodeID)
+	}
 	if m.title != nil {
 		fields = append(fields, episode.FieldTitle)
 	}
-	if m.episode_id != nil {
-		fields = append(fields, episode.FieldEpisodeID)
+	if m.description != nil {
+		fields = append(fields, episode.FieldDescription)
 	}
 	if m.episode_number != nil {
 		fields = append(fields, episode.FieldEpisodeNumber)
@@ -749,10 +802,12 @@ func (m *EpisodeMutation) Fields() []string {
 // schema.
 func (m *EpisodeMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case episode.FieldTitle:
-		return m.Title()
 	case episode.FieldEpisodeID:
 		return m.EpisodeID()
+	case episode.FieldTitle:
+		return m.Title()
+	case episode.FieldDescription:
+		return m.Description()
 	case episode.FieldEpisodeNumber:
 		return m.EpisodeNumber()
 	case episode.FieldDuration:
@@ -780,10 +835,12 @@ func (m *EpisodeMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *EpisodeMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case episode.FieldTitle:
-		return m.OldTitle(ctx)
 	case episode.FieldEpisodeID:
 		return m.OldEpisodeID(ctx)
+	case episode.FieldTitle:
+		return m.OldTitle(ctx)
+	case episode.FieldDescription:
+		return m.OldDescription(ctx)
 	case episode.FieldEpisodeNumber:
 		return m.OldEpisodeNumber(ctx)
 	case episode.FieldDuration:
@@ -811,6 +868,13 @@ func (m *EpisodeMutation) OldField(ctx context.Context, name string) (ent.Value,
 // type.
 func (m *EpisodeMutation) SetField(name string, value ent.Value) error {
 	switch name {
+	case episode.FieldEpisodeID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEpisodeID(v)
+		return nil
 	case episode.FieldTitle:
 		v, ok := value.(string)
 		if !ok {
@@ -818,12 +882,12 @@ func (m *EpisodeMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetTitle(v)
 		return nil
-	case episode.FieldEpisodeID:
+	case episode.FieldDescription:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetEpisodeID(v)
+		m.SetDescription(v)
 		return nil
 	case episode.FieldEpisodeNumber:
 		v, ok := value.(int)
@@ -968,7 +1032,11 @@ func (m *EpisodeMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *EpisodeMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(episode.FieldDescription) {
+		fields = append(fields, episode.FieldDescription)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -981,6 +1049,11 @@ func (m *EpisodeMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *EpisodeMutation) ClearField(name string) error {
+	switch name {
+	case episode.FieldDescription:
+		m.ClearDescription()
+		return nil
+	}
 	return fmt.Errorf("unknown Episode nullable field %s", name)
 }
 
@@ -988,11 +1061,14 @@ func (m *EpisodeMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *EpisodeMutation) ResetField(name string) error {
 	switch name {
+	case episode.FieldEpisodeID:
+		m.ResetEpisodeID()
+		return nil
 	case episode.FieldTitle:
 		m.ResetTitle()
 		return nil
-	case episode.FieldEpisodeID:
-		m.ResetEpisodeID()
+	case episode.FieldDescription:
+		m.ResetDescription()
 		return nil
 	case episode.FieldEpisodeNumber:
 		m.ResetEpisodeNumber()
@@ -2415,6 +2491,7 @@ type SeriesMutation struct {
 	title          *string
 	title_yomi     *string
 	title_en       *string
+	description    *string
 	clearedFields  map[string]struct{}
 	seasons        map[int]struct{}
 	removedseasons map[int]struct{}
@@ -2692,6 +2769,55 @@ func (m *SeriesMutation) ResetTitleEn() {
 	delete(m.clearedFields, series.FieldTitleEn)
 }
 
+// SetDescription sets the "description" field.
+func (m *SeriesMutation) SetDescription(s string) {
+	m.description = &s
+}
+
+// Description returns the value of the "description" field in the mutation.
+func (m *SeriesMutation) Description() (r string, exists bool) {
+	v := m.description
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDescription returns the old "description" field's value of the Series entity.
+// If the Series object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SeriesMutation) OldDescription(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDescription is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDescription requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDescription: %w", err)
+	}
+	return oldValue.Description, nil
+}
+
+// ClearDescription clears the value of the "description" field.
+func (m *SeriesMutation) ClearDescription() {
+	m.description = nil
+	m.clearedFields[series.FieldDescription] = struct{}{}
+}
+
+// DescriptionCleared returns if the "description" field was cleared in this mutation.
+func (m *SeriesMutation) DescriptionCleared() bool {
+	_, ok := m.clearedFields[series.FieldDescription]
+	return ok
+}
+
+// ResetDescription resets all changes to the "description" field.
+func (m *SeriesMutation) ResetDescription() {
+	m.description = nil
+	delete(m.clearedFields, series.FieldDescription)
+}
+
 // AddSeasonIDs adds the "seasons" edge to the Season entity by ids.
 func (m *SeriesMutation) AddSeasonIDs(ids ...int) {
 	if m.seasons == nil {
@@ -2780,7 +2906,7 @@ func (m *SeriesMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *SeriesMutation) Fields() []string {
-	fields := make([]string, 0, 4)
+	fields := make([]string, 0, 5)
 	if m.series_id != nil {
 		fields = append(fields, series.FieldSeriesID)
 	}
@@ -2792,6 +2918,9 @@ func (m *SeriesMutation) Fields() []string {
 	}
 	if m.title_en != nil {
 		fields = append(fields, series.FieldTitleEn)
+	}
+	if m.description != nil {
+		fields = append(fields, series.FieldDescription)
 	}
 	return fields
 }
@@ -2809,6 +2938,8 @@ func (m *SeriesMutation) Field(name string) (ent.Value, bool) {
 		return m.TitleYomi()
 	case series.FieldTitleEn:
 		return m.TitleEn()
+	case series.FieldDescription:
+		return m.Description()
 	}
 	return nil, false
 }
@@ -2826,6 +2957,8 @@ func (m *SeriesMutation) OldField(ctx context.Context, name string) (ent.Value, 
 		return m.OldTitleYomi(ctx)
 	case series.FieldTitleEn:
 		return m.OldTitleEn(ctx)
+	case series.FieldDescription:
+		return m.OldDescription(ctx)
 	}
 	return nil, fmt.Errorf("unknown Series field %s", name)
 }
@@ -2863,6 +2996,13 @@ func (m *SeriesMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetTitleEn(v)
 		return nil
+	case series.FieldDescription:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDescription(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Series field %s", name)
 }
@@ -2899,6 +3039,9 @@ func (m *SeriesMutation) ClearedFields() []string {
 	if m.FieldCleared(series.FieldTitleEn) {
 		fields = append(fields, series.FieldTitleEn)
 	}
+	if m.FieldCleared(series.FieldDescription) {
+		fields = append(fields, series.FieldDescription)
+	}
 	return fields
 }
 
@@ -2919,6 +3062,9 @@ func (m *SeriesMutation) ClearField(name string) error {
 	case series.FieldTitleEn:
 		m.ClearTitleEn()
 		return nil
+	case series.FieldDescription:
+		m.ClearDescription()
+		return nil
 	}
 	return fmt.Errorf("unknown Series nullable field %s", name)
 }
@@ -2938,6 +3084,9 @@ func (m *SeriesMutation) ResetField(name string) error {
 		return nil
 	case series.FieldTitleEn:
 		m.ResetTitleEn()
+		return nil
+	case series.FieldDescription:
+		m.ResetDescription()
 		return nil
 	}
 	return fmt.Errorf("unknown Series field %s", name)

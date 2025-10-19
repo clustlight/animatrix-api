@@ -20,6 +20,8 @@ const (
 	FieldTitleYomi = "title_yomi"
 	// FieldTitleEn holds the string denoting the title_en field in the database.
 	FieldTitleEn = "title_en"
+	// FieldDescription holds the string denoting the description field in the database.
+	FieldDescription = "description"
 	// EdgeSeasons holds the string denoting the seasons edge name in mutations.
 	EdgeSeasons = "seasons"
 	// Table holds the table name of the series in the database.
@@ -40,6 +42,7 @@ var Columns = []string{
 	FieldTitle,
 	FieldTitleYomi,
 	FieldTitleEn,
+	FieldDescription,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -51,6 +54,13 @@ func ValidColumn(column string) bool {
 	}
 	return false
 }
+
+var (
+	// SeriesIDValidator is a validator for the "series_id" field. It is called by the builders before save.
+	SeriesIDValidator func(string) error
+	// TitleValidator is a validator for the "title" field. It is called by the builders before save.
+	TitleValidator func(string) error
+)
 
 // OrderOption defines the ordering options for the Series queries.
 type OrderOption func(*sql.Selector)
@@ -78,6 +88,11 @@ func ByTitleYomi(opts ...sql.OrderTermOption) OrderOption {
 // ByTitleEn orders the results by the title_en field.
 func ByTitleEn(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldTitleEn, opts...).ToFunc()
+}
+
+// ByDescription orders the results by the description field.
+func ByDescription(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDescription, opts...).ToFunc()
 }
 
 // BySeasonsCount orders the results by seasons count.

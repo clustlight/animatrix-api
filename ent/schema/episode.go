@@ -16,6 +16,7 @@ func (Episode) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("episode_id").Unique().NotEmpty(),
 		field.String("title").NotEmpty(),
+		field.Text("description").Optional(),
 		field.Int("episode_number"),
 		field.Float("duration"),
 		field.String("duration_string"),

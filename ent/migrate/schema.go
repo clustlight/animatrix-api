@@ -11,8 +11,9 @@ var (
 	// EpisodesColumns holds the columns for the "episodes" table.
 	EpisodesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "title", Type: field.TypeString},
 		{Name: "episode_id", Type: field.TypeString, Unique: true},
+		{Name: "title", Type: field.TypeString},
+		{Name: "description", Type: field.TypeString, Nullable: true, Size: 2147483647},
 		{Name: "episode_number", Type: field.TypeInt},
 		{Name: "duration", Type: field.TypeFloat64},
 		{Name: "duration_string", Type: field.TypeString},
@@ -32,7 +33,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "episodes_seasons_episodes",
-				Columns:    []*schema.Column{EpisodesColumns[12]},
+				Columns:    []*schema.Column{EpisodesColumns[13]},
 				RefColumns: []*schema.Column{SeasonsColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -74,6 +75,7 @@ var (
 		{Name: "title", Type: field.TypeString},
 		{Name: "title_yomi", Type: field.TypeString, Nullable: true},
 		{Name: "title_en", Type: field.TypeString, Nullable: true},
+		{Name: "description", Type: field.TypeString, Nullable: true, Size: 2147483647},
 	}
 	// SeriesTable holds the schema information for the "series" table.
 	SeriesTable = &schema.Table{

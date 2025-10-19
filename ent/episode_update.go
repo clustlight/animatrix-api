@@ -29,6 +29,20 @@ func (eu *EpisodeUpdate) Where(ps ...predicate.Episode) *EpisodeUpdate {
 	return eu
 }
 
+// SetEpisodeID sets the "episode_id" field.
+func (eu *EpisodeUpdate) SetEpisodeID(s string) *EpisodeUpdate {
+	eu.mutation.SetEpisodeID(s)
+	return eu
+}
+
+// SetNillableEpisodeID sets the "episode_id" field if the given value is not nil.
+func (eu *EpisodeUpdate) SetNillableEpisodeID(s *string) *EpisodeUpdate {
+	if s != nil {
+		eu.SetEpisodeID(*s)
+	}
+	return eu
+}
+
 // SetTitle sets the "title" field.
 func (eu *EpisodeUpdate) SetTitle(s string) *EpisodeUpdate {
 	eu.mutation.SetTitle(s)
@@ -43,17 +57,23 @@ func (eu *EpisodeUpdate) SetNillableTitle(s *string) *EpisodeUpdate {
 	return eu
 }
 
-// SetEpisodeID sets the "episode_id" field.
-func (eu *EpisodeUpdate) SetEpisodeID(s string) *EpisodeUpdate {
-	eu.mutation.SetEpisodeID(s)
+// SetDescription sets the "description" field.
+func (eu *EpisodeUpdate) SetDescription(s string) *EpisodeUpdate {
+	eu.mutation.SetDescription(s)
 	return eu
 }
 
-// SetNillableEpisodeID sets the "episode_id" field if the given value is not nil.
-func (eu *EpisodeUpdate) SetNillableEpisodeID(s *string) *EpisodeUpdate {
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (eu *EpisodeUpdate) SetNillableDescription(s *string) *EpisodeUpdate {
 	if s != nil {
-		eu.SetEpisodeID(*s)
+		eu.SetDescription(*s)
 	}
+	return eu
+}
+
+// ClearDescription clears the value of the "description" field.
+func (eu *EpisodeUpdate) ClearDescription() *EpisodeUpdate {
+	eu.mutation.ClearDescription()
 	return eu
 }
 
@@ -262,6 +282,16 @@ func (eu *EpisodeUpdate) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (eu *EpisodeUpdate) check() error {
+	if v, ok := eu.mutation.EpisodeID(); ok {
+		if err := episode.EpisodeIDValidator(v); err != nil {
+			return &ValidationError{Name: "episode_id", err: fmt.Errorf(`ent: validator failed for field "Episode.episode_id": %w`, err)}
+		}
+	}
+	if v, ok := eu.mutation.Title(); ok {
+		if err := episode.TitleValidator(v); err != nil {
+			return &ValidationError{Name: "title", err: fmt.Errorf(`ent: validator failed for field "Episode.title": %w`, err)}
+		}
+	}
 	if eu.mutation.SeasonCleared() && len(eu.mutation.SeasonIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Episode.season"`)
 	}
@@ -280,11 +310,17 @@ func (eu *EpisodeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			}
 		}
 	}
+	if value, ok := eu.mutation.EpisodeID(); ok {
+		_spec.SetField(episode.FieldEpisodeID, field.TypeString, value)
+	}
 	if value, ok := eu.mutation.Title(); ok {
 		_spec.SetField(episode.FieldTitle, field.TypeString, value)
 	}
-	if value, ok := eu.mutation.EpisodeID(); ok {
-		_spec.SetField(episode.FieldEpisodeID, field.TypeString, value)
+	if value, ok := eu.mutation.Description(); ok {
+		_spec.SetField(episode.FieldDescription, field.TypeString, value)
+	}
+	if eu.mutation.DescriptionCleared() {
+		_spec.ClearField(episode.FieldDescription, field.TypeString)
 	}
 	if value, ok := eu.mutation.EpisodeNumber(); ok {
 		_spec.SetField(episode.FieldEpisodeNumber, field.TypeInt, value)
@@ -374,6 +410,20 @@ type EpisodeUpdateOne struct {
 	mutation *EpisodeMutation
 }
 
+// SetEpisodeID sets the "episode_id" field.
+func (euo *EpisodeUpdateOne) SetEpisodeID(s string) *EpisodeUpdateOne {
+	euo.mutation.SetEpisodeID(s)
+	return euo
+}
+
+// SetNillableEpisodeID sets the "episode_id" field if the given value is not nil.
+func (euo *EpisodeUpdateOne) SetNillableEpisodeID(s *string) *EpisodeUpdateOne {
+	if s != nil {
+		euo.SetEpisodeID(*s)
+	}
+	return euo
+}
+
 // SetTitle sets the "title" field.
 func (euo *EpisodeUpdateOne) SetTitle(s string) *EpisodeUpdateOne {
 	euo.mutation.SetTitle(s)
@@ -388,17 +438,23 @@ func (euo *EpisodeUpdateOne) SetNillableTitle(s *string) *EpisodeUpdateOne {
 	return euo
 }
 
-// SetEpisodeID sets the "episode_id" field.
-func (euo *EpisodeUpdateOne) SetEpisodeID(s string) *EpisodeUpdateOne {
-	euo.mutation.SetEpisodeID(s)
+// SetDescription sets the "description" field.
+func (euo *EpisodeUpdateOne) SetDescription(s string) *EpisodeUpdateOne {
+	euo.mutation.SetDescription(s)
 	return euo
 }
 
-// SetNillableEpisodeID sets the "episode_id" field if the given value is not nil.
-func (euo *EpisodeUpdateOne) SetNillableEpisodeID(s *string) *EpisodeUpdateOne {
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (euo *EpisodeUpdateOne) SetNillableDescription(s *string) *EpisodeUpdateOne {
 	if s != nil {
-		euo.SetEpisodeID(*s)
+		euo.SetDescription(*s)
 	}
+	return euo
+}
+
+// ClearDescription clears the value of the "description" field.
+func (euo *EpisodeUpdateOne) ClearDescription() *EpisodeUpdateOne {
+	euo.mutation.ClearDescription()
 	return euo
 }
 
@@ -620,6 +676,16 @@ func (euo *EpisodeUpdateOne) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (euo *EpisodeUpdateOne) check() error {
+	if v, ok := euo.mutation.EpisodeID(); ok {
+		if err := episode.EpisodeIDValidator(v); err != nil {
+			return &ValidationError{Name: "episode_id", err: fmt.Errorf(`ent: validator failed for field "Episode.episode_id": %w`, err)}
+		}
+	}
+	if v, ok := euo.mutation.Title(); ok {
+		if err := episode.TitleValidator(v); err != nil {
+			return &ValidationError{Name: "title", err: fmt.Errorf(`ent: validator failed for field "Episode.title": %w`, err)}
+		}
+	}
 	if euo.mutation.SeasonCleared() && len(euo.mutation.SeasonIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Episode.season"`)
 	}
@@ -655,11 +721,17 @@ func (euo *EpisodeUpdateOne) sqlSave(ctx context.Context) (_node *Episode, err e
 			}
 		}
 	}
+	if value, ok := euo.mutation.EpisodeID(); ok {
+		_spec.SetField(episode.FieldEpisodeID, field.TypeString, value)
+	}
 	if value, ok := euo.mutation.Title(); ok {
 		_spec.SetField(episode.FieldTitle, field.TypeString, value)
 	}
-	if value, ok := euo.mutation.EpisodeID(); ok {
-		_spec.SetField(episode.FieldEpisodeID, field.TypeString, value)
+	if value, ok := euo.mutation.Description(); ok {
+		_spec.SetField(episode.FieldDescription, field.TypeString, value)
+	}
+	if euo.mutation.DescriptionCleared() {
+		_spec.ClearField(episode.FieldDescription, field.TypeString)
 	}
 	if value, ok := euo.mutation.EpisodeNumber(); ok {
 		_spec.SetField(episode.FieldEpisodeNumber, field.TypeInt, value)

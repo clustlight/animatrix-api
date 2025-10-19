@@ -18,6 +18,7 @@ func (Series) Fields() []ent.Field {
 		field.String("title").NotEmpty(),
 		field.String("title_yomi").Optional(),
 		field.String("title_en").Optional(),
+		field.Text("description").Optional(),
 	}
 }
 

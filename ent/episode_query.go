@@ -299,12 +299,12 @@ func (eq *EpisodeQuery) WithSeason(opts ...func(*SeasonQuery)) *EpisodeQuery {
 // Example:
 //
 //	var v []struct {
-//		Title string `json:"title,omitempty"`
+//		EpisodeID string `json:"episode_id,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.Episode.Query().
-//		GroupBy(episode.FieldTitle).
+//		GroupBy(episode.FieldEpisodeID).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (eq *EpisodeQuery) GroupBy(field string, fields ...string) *EpisodeGroupBy {
@@ -322,11 +322,11 @@ func (eq *EpisodeQuery) GroupBy(field string, fields ...string) *EpisodeGroupBy 
 // Example:
 //
 //	var v []struct {
-//		Title string `json:"title,omitempty"`
+//		EpisodeID string `json:"episode_id,omitempty"`
 //	}
 //
 //	client.Episode.Query().
-//		Select(episode.FieldTitle).
+//		Select(episode.FieldEpisodeID).
 //		Scan(ctx, &v)
 func (eq *EpisodeQuery) Select(fields ...string) *EpisodeSelect {
 	eq.ctx.Fields = append(eq.ctx.Fields, fields...)

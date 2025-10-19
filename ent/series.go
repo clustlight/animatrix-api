@@ -24,6 +24,8 @@ type Series struct {
 	TitleYomi string `json:"title_yomi,omitempty"`
 	// TitleEn holds the value of the "title_en" field.
 	TitleEn string `json:"title_en,omitempty"`
+	// Description holds the value of the "description" field.
+	Description string `json:"description,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the SeriesQuery when eager-loading is set.
 	Edges        SeriesEdges `json:"edges"`
@@ -55,7 +57,7 @@ func (*Series) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case series.FieldID:
 			values[i] = new(sql.NullInt64)
-		case series.FieldSeriesID, series.FieldTitle, series.FieldTitleYomi, series.FieldTitleEn:
+		case series.FieldSeriesID, series.FieldTitle, series.FieldTitleYomi, series.FieldTitleEn, series.FieldDescription:
 			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -101,6 +103,12 @@ func (s *Series) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field title_en", values[i])
 			} else if value.Valid {
 				s.TitleEn = value.String
+			}
+		case series.FieldDescription:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field description", values[i])
+			} else if value.Valid {
+				s.Description = value.String
 			}
 		default:
 			s.selectValues.Set(columns[i], values[i])
@@ -154,6 +162,9 @@ func (s *Series) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("title_en=")
 	builder.WriteString(s.TitleEn)
+	builder.WriteString(", ")
+	builder.WriteString("description=")
+	builder.WriteString(s.Description)
 	builder.WriteByte(')')
 	return builder.String()
 }

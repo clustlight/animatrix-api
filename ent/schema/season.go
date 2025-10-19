@@ -19,7 +19,7 @@ func (Season) Fields() []ent.Field {
 		field.String("season_title_yomi").Optional(),
 		field.Int("season_number"),
 		field.Int("shoboi_tid").Optional(),
-		field.Text("description").Optional(), // Comment
+		field.Text("description").Optional(),
 		field.Int("first_year").Optional(),
 		field.Int("first_month").Optional(),
 		field.Int("first_end_year").Optional(),

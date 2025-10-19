@@ -90,6 +90,13 @@ func ValidColumn(column string) bool {
 	return false
 }
 
+var (
+	// SeasonIDValidator is a validator for the "season_id" field. It is called by the builders before save.
+	SeasonIDValidator func(string) error
+	// SeasonTitleValidator is a validator for the "season_title" field. It is called by the builders before save.
+	SeasonTitleValidator func(string) error
+)
+
 // OrderOption defines the ordering options for the Season queries.
 type OrderOption func(*sql.Selector)
 

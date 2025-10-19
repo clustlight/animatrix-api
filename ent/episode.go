@@ -18,10 +18,12 @@ type Episode struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID int `json:"id,omitempty"`
-	// Title holds the value of the "title" field.
-	Title string `json:"title,omitempty"`
 	// EpisodeID holds the value of the "episode_id" field.
 	EpisodeID string `json:"episode_id,omitempty"`
+	// Title holds the value of the "title" field.
+	Title string `json:"title,omitempty"`
+	// Description holds the value of the "description" field.
+	Description string `json:"description,omitempty"`
 	// EpisodeNumber holds the value of the "episode_number" field.
 	EpisodeNumber int `json:"episode_number,omitempty"`
 	// Duration holds the value of the "duration" field.
@@ -76,7 +78,7 @@ func (*Episode) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullFloat64)
 		case episode.FieldID, episode.FieldEpisodeNumber, episode.FieldWidth, episode.FieldHeight:
 			values[i] = new(sql.NullInt64)
-		case episode.FieldTitle, episode.FieldEpisodeID, episode.FieldDurationString, episode.FieldFormatID, episode.FieldDynamicRange, episode.FieldMetadata:
+		case episode.FieldEpisodeID, episode.FieldTitle, episode.FieldDescription, episode.FieldDurationString, episode.FieldFormatID, episode.FieldDynamicRange, episode.FieldMetadata:
 			values[i] = new(sql.NullString)
 		case episode.FieldTimestamp:
 			values[i] = new(sql.NullTime)
@@ -103,17 +105,23 @@ func (e *Episode) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
 			e.ID = int(value.Int64)
+		case episode.FieldEpisodeID:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field episode_id", values[i])
+			} else if value.Valid {
+				e.EpisodeID = value.String
+			}
 		case episode.FieldTitle:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field title", values[i])
 			} else if value.Valid {
 				e.Title = value.String
 			}
-		case episode.FieldEpisodeID:
+		case episode.FieldDescription:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field episode_id", values[i])
+				return fmt.Errorf("unexpected type %T for field description", values[i])
 			} else if value.Valid {
-				e.EpisodeID = value.String
+				e.Description = value.String
 			}
 		case episode.FieldEpisodeNumber:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -217,11 +225,14 @@ func (e *Episode) String() string {
 	var builder strings.Builder
 	builder.WriteString("Episode(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", e.ID))
+	builder.WriteString("episode_id=")
+	builder.WriteString(e.EpisodeID)
+	builder.WriteString(", ")
 	builder.WriteString("title=")
 	builder.WriteString(e.Title)
 	builder.WriteString(", ")
-	builder.WriteString("episode_id=")
-	builder.WriteString(e.EpisodeID)
+	builder.WriteString("description=")
+	builder.WriteString(e.Description)
 	builder.WriteString(", ")
 	builder.WriteString("episode_number=")
 	builder.WriteString(fmt.Sprintf("%v", e.EpisodeNumber))
