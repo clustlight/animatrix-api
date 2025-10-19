@@ -75,8 +75,12 @@ func BuildSeasonResponse(season *ent.Season, withEpisodes bool) types.SeasonResp
 		thumbURL = buildThumbnailURL(baseURL, seriesID, suffix, "png")
 	}
 
+	seriesIDVal := ""
+	if season.Edges.Series != nil {
+		seriesIDVal = season.Edges.Series.SeriesID
+	}
 	resp := types.SeasonResponse{
-		SeriesID:        season.Edges.Series.SeriesID,
+		SeriesID:        seriesIDVal,
 		SeasonID:        season.SeasonID,
 		SeasonTitle:     season.SeasonTitle,
 		SeasonTitleYomi: season.SeasonTitleYomi,
