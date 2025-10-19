@@ -159,3 +159,18 @@ func GetRecentlyUpdatedSeries(ctx context.Context, client *ent.Client) ([]types.
 	}
 	return responses, nil
 }
+
+func DeleteSeries(ctx context.Context, client *ent.Client, seriesID string) error {
+	s, err := client.Series.
+		Query().
+		Where(series.SeriesIDEQ(seriesID)).
+		WithSeasons().
+		Only(ctx)
+	if err != nil {
+		return err
+	}
+	if len(s.Edges.Seasons) > 0 {
+		return ErrHasChildren
+	}
+	return client.Series.DeleteOneID(s.ID).Exec(ctx)
+}

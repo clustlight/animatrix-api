@@ -198,3 +198,18 @@ func BulkCreateSeason(ctx context.Context, client *ent.Client, seasonList []type
 	}
 	return resps, nil
 }
+
+func DeleteSeason(ctx context.Context, client *ent.Client, seasonID string) error {
+	s, err := client.Season.
+		Query().
+		Where(season.SeasonIDEQ(seasonID)).
+		WithEpisodes().
+		Only(ctx)
+	if err != nil {
+		return err
+	}
+	if len(s.Edges.Episodes) > 0 {
+		return ErrHasChildren
+	}
+	return client.Season.DeleteOneID(s.ID).Exec(ctx)
+}

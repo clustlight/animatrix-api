@@ -29,6 +29,7 @@ Animatrix API is a RESTful server for managing ABM archives.
 - `POST   /v1/series`                 - Create a new series
 - `GET    /v1/series/{series_id}`     - Get a specific series
 - `PATCH  /v1/series/{series_id}`     - Update a series
+- `DELETE /v1/series/{series_id}`     - Delete a series (returns 204; 404 if not found; 409 if it has seasons)
 - `POST   /v1/series/bulk`            - Bulk create series
 - `GET    /v1/series/recent`          - List recently updated series
 
@@ -37,6 +38,7 @@ Animatrix API is a RESTful server for managing ABM archives.
 - `POST   /v1/season`                 - Create a new season
 - `GET    /v1/season/{season_id}`     - Get a specific season
 - `PATCH  /v1/season/{season_id}`     - Update a season
+- `DELETE /v1/season/{season_id}`     - Delete a season (returns 204; 404 if not found; 409 if it has episodes)
 - `POST   /v1/season/bulk`            - Bulk create seasons
 
 ### Episode
@@ -44,6 +46,7 @@ Animatrix API is a RESTful server for managing ABM archives.
 - `POST   /v1/episode`                - Create a new episode
 - `GET    /v1/episode/{episode_id}`   - Get a specific episode
 - `PATCH  /v1/episode/{episode_id}`   - Update an episode
+- `DELETE /v1/episode/{episode_id}`   - Delete an episode (returns 204; 404 if not found)
 - `POST   /v1/episode/bulk`           - Bulk create episodes
 
 ### Search

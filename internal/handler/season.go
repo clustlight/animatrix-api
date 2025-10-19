@@ -103,3 +103,24 @@ func BulkCreateSeasonHandler(client *ent.Client) http.HandlerFunc {
 		json.NewEncoder(w).Encode(newSeasonList)
 	}
 }
+
+func DeleteSeason(client *ent.Client) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		seasonID := chi.URLParam(r, "season_id")
+		if seasonID == "" {
+			http.Error(w, "season_id required", http.StatusBadRequest)
+			return
+		}
+		if err := controller.DeleteSeason(r.Context(), client, seasonID); err != nil {
+			if err == controller.ErrHasChildren {
+				http.Error(w, "Season has episodes; cannot delete", http.StatusConflict)
+			} else if _, ok := err.(*ent.NotFoundError); ok {
+				http.Error(w, "Season not found", http.StatusNotFound)
+			} else {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+			}
+			return
+		}
+		w.WriteHeader(http.StatusNoContent)
+	}
+}

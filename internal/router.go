@@ -13,7 +13,7 @@ func NewRouter(client *ent.Client) *chi.Mux {
 
 	r.Use(cors.Handler(cors.Options{
 		AllowedOrigins:   []string{"*"},
-		AllowedMethods:   []string{"GET", "POST", "PATCH"},
+		AllowedMethods:   []string{"GET", "POST", "PATCH", "DELETE"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
 		ExposedHeaders:   []string{"Link"},
 		AllowCredentials: false,
@@ -25,6 +25,7 @@ func NewRouter(client *ent.Client) *chi.Mux {
 		api.Post("/series", handler.CreateSeries(client))
 		api.Get("/series/{series_id}", handler.GetSeriesDetail(client))
 		api.Patch("/series/{series_id}", handler.UpdateSeries(client))
+		api.Delete("/series/{series_id}", handler.DeleteSeries(client))
 
 		api.Post("/series/bulk", handler.BulkCreateSeriesHandler(client))
 
@@ -34,6 +35,7 @@ func NewRouter(client *ent.Client) *chi.Mux {
 		api.Post("/season", handler.CreateSeason(client))
 		api.Get("/season/{season_id}", handler.GetSeasonDetail(client))
 		api.Patch("/season/{season_id}", handler.UpdateSeason(client))
+		api.Delete("/season/{season_id}", handler.DeleteSeason(client))
 
 		api.Post("/season/bulk", handler.BulkCreateSeasonHandler(client))
 
@@ -41,6 +43,7 @@ func NewRouter(client *ent.Client) *chi.Mux {
 		api.Post("/episode", handler.CreateEpisode(client))
 		api.Get("/episode/{episode_id}", handler.GetEpisodeDetail(client))
 		api.Patch("/episode/{episode_id}", handler.UpdateEpisode(client))
+		api.Delete("/episode/{episode_id}", handler.DeleteEpisode(client))
 
 		api.Post("/episode/bulk", handler.BulkCreateEpisodeHandler(client))
 

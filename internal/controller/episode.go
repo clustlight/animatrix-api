@@ -158,3 +158,14 @@ func BulkCreateEpisode(ctx context.Context, client *ent.Client, episodeList []ty
 	}
 	return resps, nil
 }
+
+func DeleteEpisode(ctx context.Context, client *ent.Client, episodeID string) error {
+	e, err := client.Episode.
+		Query().
+		Where(episode.EpisodeIDEQ(episodeID)).
+		Only(ctx)
+	if err != nil {
+		return err
+	}
+	return client.Episode.DeleteOneID(e.ID).Exec(ctx)
+}

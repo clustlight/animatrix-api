@@ -106,3 +106,23 @@ func BulkCreateEpisodeHandler(client *ent.Client) http.HandlerFunc {
 		json.NewEncoder(w).Encode(newEpisodeList)
 	}
 }
+
+func DeleteEpisode(client *ent.Client) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		episodeID := chi.URLParam(r, "episode_id")
+		if episodeID == "" {
+			http.Error(w, "episode_id required", http.StatusBadRequest)
+			return
+		}
+		if err := controller.DeleteEpisode(r.Context(), client, episodeID); err != nil {
+			switch _, ok := err.(*ent.NotFoundError); {
+			case ok:
+				http.Error(w, "Episode not found", http.StatusNotFound)
+			default:
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+			}
+			return
+		}
+		w.WriteHeader(http.StatusNoContent)
+	}
+}

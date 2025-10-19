@@ -128,3 +128,27 @@ func GetRecentlyUpdatedSeriesHandler(client *ent.Client) http.HandlerFunc {
 		json.NewEncoder(w).Encode(series)
 	}
 }
+
+func DeleteSeries(client *ent.Client) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		seriesID := chi.URLParam(r, "series_id")
+		if seriesID == "" {
+			http.Error(w, "series_id required", http.StatusBadRequest)
+			return
+		}
+		if err := controller.DeleteSeries(r.Context(), client, seriesID); err != nil {
+			switch {
+			case err == controller.ErrHasChildren:
+				http.Error(w, "Series has seasons; cannot delete", http.StatusConflict)
+			default:
+				if _, ok := err.(*ent.NotFoundError); ok {
+					http.Error(w, "Series not found", http.StatusNotFound)
+				} else {
+					http.Error(w, err.Error(), http.StatusInternalServerError)
+				}
+			}
+			return
+		}
+		w.WriteHeader(http.StatusNoContent)
+	}
+}
