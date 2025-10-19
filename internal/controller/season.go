@@ -129,6 +129,17 @@ func UpdateSeason(ctx context.Context, client *ent.Client, seasonID string, req 
 		update.SetFirstEndMonth(*req.FirstEndMonth)
 	}
 
+	if req.SeriesID != nil {
+		srs, err := client.Series.
+			Query().
+			Where(series.SeriesIDEQ(*req.SeriesID)).
+			Only(ctx)
+		if err != nil {
+			return nil, err
+		}
+		update.SetSeries(srs)
+	}
+
 	saved, err := update.Save(ctx)
 	if err != nil {
 		return nil, err

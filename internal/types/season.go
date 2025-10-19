@@ -43,6 +43,7 @@ type UpdateSeasonRequest struct {
 	FirstMonth      *int    `json:"first_month,omitempty"`
 	FirstEndYear    *int    `json:"first_end_year,omitempty"`
 	FirstEndMonth   *int    `json:"first_end_month,omitempty"`
+	SeriesID        *string `json:"series_id,omitempty"`
 }
 
 func (r *CreateSeasonRequest) ValidateRequired() error {
