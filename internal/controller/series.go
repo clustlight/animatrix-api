@@ -17,7 +17,12 @@ type seriesWithTimestamp struct {
 }
 
 func GetAllSeries(ctx context.Context, client *ent.Client) (*[]types.SeriesResponse, error) {
-	series, err := client.Series.Query().All(ctx)
+	series, err := client.Series.
+		Query().
+		WithSeasons(func(q *ent.SeasonQuery) {
+			q.WithSeries()
+		}).
+		All(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -36,6 +41,7 @@ func GetSeries(ctx context.Context, client *ent.Client, seriesID string) (*types
 		Query().
 		Where(series.SeriesIDEQ(seriesID)).
 		WithSeasons(func(q *ent.SeasonQuery) {
+			q.WithSeries()
 			q.WithEpisodes(func(eq *ent.EpisodeQuery) {
 				eq.Order(ent.Asc("episode_number"))
 			}).
@@ -107,8 +113,22 @@ func BulkCreateSeries(ctx context.Context, client *ent.Client, seriesList []type
 	if err != nil {
 		return nil, err
 	}
-	resps := make([]types.SeriesResponse, 0, len(created))
+	ids := make([]string, 0, len(created))
 	for _, s := range created {
+		ids = append(ids, s.SeriesID)
+	}
+	seriesListFull, err := client.Series.
+		Query().
+		Where(series.SeriesIDIn(ids...)).
+		WithSeasons(func(q *ent.SeasonQuery) {
+			q.WithSeries()
+		}).
+		All(ctx)
+	if err != nil {
+		return nil, err
+	}
+	resps := make([]types.SeriesResponse, 0, len(seriesListFull))
+	for _, s := range seriesListFull {
 		resps = append(resps, utils.BuildSeriesResponse(s, false, false))
 	}
 	return resps, nil
