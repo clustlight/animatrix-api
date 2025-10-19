@@ -76,6 +76,7 @@ func BuildSeasonResponse(season *ent.Season, withEpisodes bool) types.SeasonResp
 	}
 
 	resp := types.SeasonResponse{
+		SeriesID:        season.Edges.Series.SeriesID,
 		SeasonID:        season.SeasonID,
 		SeasonTitle:     season.SeasonTitle,
 		SeasonTitleYomi: season.SeasonTitleYomi,

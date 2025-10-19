@@ -5,6 +5,7 @@ import (
 )
 
 type SeasonResponse struct {
+	SeriesID        string            `json:"series_id"`
 	SeasonID        string            `json:"season_id"`
 	SeasonTitle     string            `json:"season_title"`
 	SeasonTitleYomi string            `json:"season_title_yomi"`
