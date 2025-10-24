@@ -14,25 +14,6 @@ import (
 	"github.com/ikawaha/kagome/v2/tokenizer"
 )
 
-// Convert Katakana to Hiragana
-func katakanaToHiragana(s string) string {
-	return strings.Map(func(r rune) rune {
-		if r >= 0x30A1 && r <= 0x30F6 {
-			return r - 0x60
-		}
-		return r
-	}, s)
-}
-
-func hiraganaToKatakana(s string) string {
-	return strings.Map(func(r rune) rune {
-		if r >= 0x3041 && r <= 0x3096 {
-			return r + 0x60
-		}
-		return r
-	}, s)
-}
-
 // Normalize symbols: unify long vowel marks, middle dots, and remove spaces
 func normalizeSymbols(s string) string {
 	var b strings.Builder
@@ -55,7 +36,6 @@ func normalizeSymbols(s string) string {
 func normalizeJapanese(s string) string {
 	s = strings.ToLower(s)
 	s = normalizeSymbols(s)
-	s = katakanaToHiragana(s)
 	return s
 }
 
@@ -79,24 +59,76 @@ func tokenizeJapanese(text string) []string {
 	return words
 }
 
+func hiraToKata(s string) string {
+	var b strings.Builder
+	for _, r := range s {
+		if r >= 0x3041 && r <= 0x3096 {
+			b.WriteRune(r + 0x60)
+		} else {
+			b.WriteRune(r)
+		}
+	}
+	return b.String()
+}
+
+func kataToHira(s string) string {
+	var b strings.Builder
+	for _, r := range s {
+		if r >= 0x30A1 && r <= 0x30F6 {
+			b.WriteRune(r - 0x60)
+		} else {
+			b.WriteRune(r)
+		}
+	}
+	return b.String()
+}
+
+func isHiragana(s string) bool {
+	for _, r := range s {
+		if r < 0x3041 || r > 0x3096 {
+			return false
+		}
+	}
+	return len(s) > 0
+}
+
+func isKatakana(s string) bool {
+	for _, r := range s {
+		if r < 0x30A1 || r > 0x30F6 {
+			return false
+		}
+	}
+	return len(s) > 0
+}
+
 // Search series by title or yomi, and also by related seasons, using kagome tokens for DB search
 func SearchSeries(ctx context.Context, client *ent.Client, query string) ([]types.SeriesResponse, error) {
 	queryHira := normalizeJapanese(query)
-	queryKana := hiraganaToKatakana(query)
 	tokens := tokenizeJapanese(query)
 	tokenSet := make(map[string]struct{})
 	for _, token := range tokens {
 		tokenSet[token] = struct{}{}
 		tokenSet[normalizeJapanese(token)] = struct{}{}
-		tokenSet[hiraganaToKatakana(token)] = struct{}{}
+	}
+
+	var hiraOrKata string
+	if isHiragana(queryHira) {
+		hiraOrKata = hiraToKata(queryHira)
+	} else if isKatakana(queryHira) {
+		hiraOrKata = kataToHira(queryHira)
 	}
 
 	seriesPredicates := []predicate.Series{
 		series.TitleContainsFold(query),
 		series.TitleYomiContainsFold(query),
 		series.TitleYomiContainsFold(queryHira),
-		series.TitleYomiContainsFold(queryKana),
 		series.TitleEnContainsFold(query),
+	}
+	if hiraOrKata != "" {
+		seriesPredicates = append(seriesPredicates,
+			series.TitleContainsFold(hiraOrKata),
+			series.TitleYomiContainsFold(hiraOrKata),
+		)
 	}
 	for token := range tokenSet {
 		if token == "" {
@@ -106,25 +138,51 @@ func SearchSeries(ctx context.Context, client *ent.Client, query string) ([]type
 			series.TitleContainsFold(token),
 			series.TitleYomiContainsFold(token),
 			series.TitleYomiContainsFold(normalizeJapanese(token)),
-			series.TitleYomiContainsFold(hiraganaToKatakana(token)), // 追加
 			series.TitleEnContainsFold(token),
 		)
+
+		if isHiragana(token) {
+			kata := hiraToKata(token)
+			seriesPredicates = append(seriesPredicates,
+				series.TitleContainsFold(kata),
+				series.TitleYomiContainsFold(kata),
+			)
+		} else if isKatakana(token) {
+			hira := kataToHira(token)
+			seriesPredicates = append(seriesPredicates,
+				series.TitleContainsFold(hira),
+				series.TitleYomiContainsFold(hira),
+			)
+		}
 	}
 
+	// Build AND condition for all tokens
 	andSeriesPredicates := []predicate.Series{}
 	for token := range tokenSet {
 		if token == "" {
 			continue
 		}
-		andSeriesPredicates = append(andSeriesPredicates,
-			series.Or(
-				series.TitleContainsFold(token),
-				series.TitleYomiContainsFold(token),
-				series.TitleYomiContainsFold(normalizeJapanese(token)),
-				series.TitleYomiContainsFold(hiraganaToKatakana(token)),
-				series.TitleEnContainsFold(token),
-			),
-		)
+		orPreds := []predicate.Series{
+			series.TitleContainsFold(token),
+			series.TitleYomiContainsFold(token),
+			series.TitleYomiContainsFold(normalizeJapanese(token)),
+			series.TitleEnContainsFold(token),
+		}
+
+		if isHiragana(token) {
+			kata := hiraToKata(token)
+			orPreds = append(orPreds,
+				series.TitleContainsFold(kata),
+				series.TitleYomiContainsFold(kata),
+			)
+		} else if isKatakana(token) {
+			hira := kataToHira(token)
+			orPreds = append(orPreds,
+				series.TitleContainsFold(hira),
+				series.TitleYomiContainsFold(hira),
+			)
+		}
+		andSeriesPredicates = append(andSeriesPredicates, series.Or(orPreds...))
 	}
 
 	seriesList, err := client.Series.Query().
@@ -146,14 +204,26 @@ func SearchSeries(ctx context.Context, client *ent.Client, query string) ([]type
 		if token == "" {
 			continue
 		}
-		andSeasonPredicates = append(andSeasonPredicates,
-			season.Or(
-				season.SeasonTitleContainsFold(token),
-				season.SeasonTitleYomiContainsFold(token),
-				season.SeasonTitleYomiContainsFold(normalizeJapanese(token)),
-				season.SeasonTitleYomiContainsFold(hiraganaToKatakana(token)),
-			),
-		)
+		orPreds := []predicate.Season{
+			season.SeasonTitleContainsFold(token),
+			season.SeasonTitleYomiContainsFold(token),
+			season.SeasonTitleYomiContainsFold(normalizeJapanese(token)),
+		}
+
+		if isHiragana(token) {
+			kata := hiraToKata(token)
+			orPreds = append(orPreds,
+				season.SeasonTitleContainsFold(kata),
+				season.SeasonTitleYomiContainsFold(kata),
+			)
+		} else if isKatakana(token) {
+			hira := kataToHira(token)
+			orPreds = append(orPreds,
+				season.SeasonTitleContainsFold(hira),
+				season.SeasonTitleYomiContainsFold(hira),
+			)
+		}
+		andSeasonPredicates = append(andSeasonPredicates, season.Or(orPreds...))
 	}
 
 	seasons, err := client.Season.Query().
