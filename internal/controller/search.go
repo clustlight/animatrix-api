@@ -24,6 +24,15 @@ func katakanaToHiragana(s string) string {
 	}, s)
 }
 
+func hiraganaToKatakana(s string) string {
+	return strings.Map(func(r rune) rune {
+		if r >= 0x3041 && r <= 0x3096 {
+			return r + 0x60
+		}
+		return r
+	}, s)
+}
+
 // Normalize symbols: unify long vowel marks, middle dots, and remove spaces
 func normalizeSymbols(s string) string {
 	var b strings.Builder
@@ -73,18 +82,20 @@ func tokenizeJapanese(text string) []string {
 // Search series by title or yomi, and also by related seasons, using kagome tokens for DB search
 func SearchSeries(ctx context.Context, client *ent.Client, query string) ([]types.SeriesResponse, error) {
 	queryHira := normalizeJapanese(query)
+	queryKana := hiraganaToKatakana(query)
 	tokens := tokenizeJapanese(query)
 	tokenSet := make(map[string]struct{})
 	for _, token := range tokens {
 		tokenSet[token] = struct{}{}
 		tokenSet[normalizeJapanese(token)] = struct{}{}
+		tokenSet[hiraganaToKatakana(token)] = struct{}{}
 	}
 
-	// Search for series that contain all tokens (AND condition)
 	seriesPredicates := []predicate.Series{
 		series.TitleContainsFold(query),
 		series.TitleYomiContainsFold(query),
 		series.TitleYomiContainsFold(queryHira),
+		series.TitleYomiContainsFold(queryKana),
 		series.TitleEnContainsFold(query),
 	}
 	for token := range tokenSet {
@@ -95,11 +106,11 @@ func SearchSeries(ctx context.Context, client *ent.Client, query string) ([]type
 			series.TitleContainsFold(token),
 			series.TitleYomiContainsFold(token),
 			series.TitleYomiContainsFold(normalizeJapanese(token)),
+			series.TitleYomiContainsFold(hiraganaToKatakana(token)), // 追加
 			series.TitleEnContainsFold(token),
 		)
 	}
 
-	// Build AND condition for all tokens
 	andSeriesPredicates := []predicate.Series{}
 	for token := range tokenSet {
 		if token == "" {
@@ -110,6 +121,7 @@ func SearchSeries(ctx context.Context, client *ent.Client, query string) ([]type
 				series.TitleContainsFold(token),
 				series.TitleYomiContainsFold(token),
 				series.TitleYomiContainsFold(normalizeJapanese(token)),
+				series.TitleYomiContainsFold(hiraganaToKatakana(token)),
 				series.TitleEnContainsFold(token),
 			),
 		)
@@ -139,6 +151,7 @@ func SearchSeries(ctx context.Context, client *ent.Client, query string) ([]type
 				season.SeasonTitleContainsFold(token),
 				season.SeasonTitleYomiContainsFold(token),
 				season.SeasonTitleYomiContainsFold(normalizeJapanese(token)),
+				season.SeasonTitleYomiContainsFold(hiraganaToKatakana(token)),
 			),
 		)
 	}
