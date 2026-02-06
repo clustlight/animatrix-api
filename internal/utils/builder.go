@@ -51,9 +51,9 @@ func getImgproxyURL(originalURL string, sizeType string, size int) string {
 	}
 	var sizeParam string
 	if sizeType == "h" {
-		sizeParam = "w:0,h:" + strconv.Itoa(size)
+		sizeParam = "h:" + strconv.Itoa(size)
 	} else {
-		sizeParam = "w:" + strconv.Itoa(size) + ",h:0"
+		sizeParam = "w:" + strconv.Itoa(size)
 	}
 	return imgproxyBase + "/unsafe/" + sizeParam + "/plain/" + encoded
 }
