@@ -104,7 +104,7 @@ func BuildSeasonResponse(season *ent.Season, withEpisodes bool) types.SeasonResp
 	} else {
 		thumbURL = JoinURL(baseURL, seriesID+"/thumbnail.png")
 	}
-	thumbURL = getImgproxyURL(thumbURL, "h", 480)
+	thumbURL = getImgproxyURL(thumbURL, "h", 240)
 
 	seriesIDVal := ""
 	if season.Edges.Series != nil {
@@ -140,7 +140,7 @@ func BuildEpisodeResponse(ep *ent.Episode) types.EpisodeResponse {
 	epPath := strings.Replace(ep.EpisodeID, "_", "/", 1)
 	VideoUrl := JoinURL(baseURL, epPath+"/video.mp4")
 	ThumbnailUrl := JoinURL(baseURL, epPath+"/thumbnail.png")
-	ThumbnailUrl = getImgproxyURL(ThumbnailUrl, "h", 480)
+	ThumbnailUrl = getImgproxyURL(ThumbnailUrl, "h", 240)
 
 	return types.EpisodeResponse{
 		Title:          ep.Title,
