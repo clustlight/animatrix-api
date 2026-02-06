@@ -4,6 +4,7 @@ import (
 	"net/url"
 	"os"
 	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/clustlight/animatrix-api/ent"
@@ -33,16 +34,42 @@ func buildThumbnailURL(baseURL, id, suffix, ext string) string {
 	return JoinURL(baseURL, id+"/thumbnail."+ext)
 }
 
+func getImgproxyURL(originalURL string, sizeType string, size int) string {
+	imgproxyBase := os.Getenv("IMGPROXY_URL")
+	if imgproxyBase == "" {
+		// fallback: return original if not set
+		return originalURL
+	}
+	// sizeType: "w" or "h"
+	u, err := url.Parse(originalURL)
+	if err != nil {
+		return originalURL
+	}
+	encoded := u.Scheme + "://" + url.PathEscape(u.Host+u.Path)
+	if u.RawQuery != "" {
+		encoded += "%3F" + url.PathEscape(u.RawQuery)
+	}
+	var sizeParam string
+	if sizeType == "h" {
+		sizeParam = "w:0,h:" + strconv.Itoa(size)
+	} else {
+		sizeParam = "w:" + strconv.Itoa(size) + ",h:0"
+	}
+	return imgproxyBase + "/unsafe/" + sizeParam + "/plain/" + encoded
+}
+
 func BuildSeriesResponse(series *ent.Series, withSeasons, withEpisodes bool) types.SeriesResponse {
 	baseURL := getObjectStorageURL()
+	origThumb := JoinURL(baseURL, series.SeriesID+"/thumbnail.png")
+	origPortrait := JoinURL(baseURL, series.SeriesID+"/portrait.png")
 	resp := types.SeriesResponse{
 		SeriesID:     series.SeriesID,
 		Title:        series.Title,
 		TitleYomi:    series.TitleYomi,
 		TitleEn:      series.TitleEn,
 		Description:  series.Description,
-		ThumbnailURL: JoinURL(baseURL, series.SeriesID+"/thumbnail.png"),
-		PortraitURL:  JoinURL(baseURL, series.SeriesID+"/portrait.png"),
+		ThumbnailURL: getImgproxyURL(origThumb, "h", 360),
+		PortraitURL:  getImgproxyURL(origPortrait, "w", 360),
 	}
 
 	if withSeasons && series.Edges.Seasons != nil {
@@ -74,7 +101,10 @@ func BuildSeasonResponse(season *ent.Season, withEpisodes bool) types.SeasonResp
 	thumbURL := ""
 	if suffix != "" {
 		thumbURL = buildThumbnailURL(baseURL, seriesID, suffix, "png")
+	} else {
+		thumbURL = JoinURL(baseURL, seriesID+"/thumbnail.png")
 	}
+	thumbURL = getImgproxyURL(thumbURL, "h", 480)
 
 	seriesIDVal := ""
 	if season.Edges.Series != nil {
@@ -110,6 +140,7 @@ func BuildEpisodeResponse(ep *ent.Episode) types.EpisodeResponse {
 	epPath := strings.Replace(ep.EpisodeID, "_", "/", 1)
 	VideoUrl := JoinURL(baseURL, epPath+"/video.mp4")
 	ThumbnailUrl := JoinURL(baseURL, epPath+"/thumbnail.png")
+	ThumbnailUrl = getImgproxyURL(ThumbnailUrl, "h", 480)
 
 	return types.EpisodeResponse{
 		Title:          ep.Title,
